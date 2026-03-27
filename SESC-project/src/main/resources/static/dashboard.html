@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .navbar {
+            background: orange;
+            padding: 15px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h3>Student Dashboard</h3>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h3 id="name"></h3>
+        <p id="email"></p>
+        <p id="phone"></p>
+        <p id="address"></p>
+    </div>
+</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        window.location.href = "login.html";
+    }
+
+    document.getElementById("name").innerText = user.name;
+    document.getElementById("email").innerText = user.email;
+    document.getElementById("phone").innerText = user.phone;
+    document.getElementById("address").innerText = user.address;
+
+    function logout() {
+        localStorage.removeItem("user");
+        window.location.href = "login.html";
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-btn {
+            background: white;
+            color: #667eea;
+        }
+
+        .register-btn {
+            background: #ff7eb3;
+            color: white;
+        }
+
+        .login-btn:hover {
+            background: #f1f1f1;
+        }
+
+        .register-btn:hover {
+            background: #ff5c9d;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Welcome to Student App</h1>
+    <p>Manage your student information easily</p>
+
+    <div class="buttons">
+        <button class="login-btn" onclick="goToLogin()">Login</button>
+        <button class="register-btn" onclick="goToRegister()">Register</button>
+    </div>
+</div>
+
+<script>
+    function goToLogin() {
+        window.location.href = "login.html";
+    }
+
+    function goToRegister() {
+        window.location.href = "register.html";
+    }
+</script>
+
+</body>
+</html>
