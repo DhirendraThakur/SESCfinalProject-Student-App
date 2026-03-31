@@ -36,6 +36,21 @@ public class StudentController {
         }
     }
 
+    @PutMapping("/{id}")
+    public StudentEntities updateStudent(@PathVariable String id, @RequestBody StudentEntities updatedStudent) {
+
+        return studentService.getById(id).map(student -> {
+
+            student.setName(updatedStudent.getName());
+            student.setEmail(updatedStudent.getEmail());
+            student.setPhoneno(updatedStudent.getPhoneno());
+            student.setAddress(updatedStudent.getAddress());
+
+            return studentService.save(student);
+
+        }).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
 //    @GetMapping
 //    public List<StudentEntities> getAllStudents() {
 //

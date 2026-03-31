@@ -24,6 +24,9 @@ public class StudentService {
     public StudentEntities register(StudentEntities student) {
         return repo.save(student);
     }
+    public Optional<StudentEntities> getById(String id) {
+        return repo.findById(id);
+    }
 
 //    public List<StudentEntities> getAll() {
 //        return repo.findAll();

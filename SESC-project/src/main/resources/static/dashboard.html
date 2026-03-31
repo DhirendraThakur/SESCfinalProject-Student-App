@@ -2,19 +2,55 @@
 <html>
 <head>
     <title>Dashboard</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         body {
             font-family: Arial;
-            background: #f4f6f9;
             margin: 0;
+            background: #f4f6f9;
         }
 
         .navbar {
-            background: orange;
-            padding: 15px;
+            background: #4facfe;
+            padding: 15px 20px;
             color: white;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-menu i {
+            font-size: 22px;
+        }
+
+        .dropdown {
+            position: absolute;
+            right: 0;
+            top: 35px;
+            background: white;
+            width: 150px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .dropdown a:hover {
+            background: #f0f0f0;
         }
 
         .container {
@@ -29,29 +65,83 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: 10% auto;
+            border-radius: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+        }
+
         button {
             padding: 10px;
-            background: red;
-            color: white;
+            background: #4facfe;
             border: none;
+            color: white;
+            width: 100%;
             border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3a8dde;
         }
     </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <div class="navbar">
     <h3>Student Dashboard</h3>
-    <button onclick="logout()">Logout</button>
+
+    <div class="user-menu" onclick="toggleMenu()">
+        <i class="fa-solid fa-user-circle"></i>
+
+        <div class="dropdown" id="dropdown">
+            <a href="#" onclick="updateUser()">Update</a>
+            <a href="#" onclick="deleteUser()">Delete</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
 </div>
 
+<!-- CONTENT -->
 <div class="container">
     <div class="card">
         <h3 id="name"></h3>
         <p id="email"></p>
         <p id="phone"></p>
         <p id="address"></p>
+    </div>
+</div>
+
+<!-- UPDATE MODAL -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h3>Update Profile</h3>
+
+        <input id="newName" placeholder="Name">
+        <input id="newEmail" placeholder="Email">
+        <input id="newPhone" placeholder="Phone">
+        <input id="newAddress" placeholder="Address">
+
+        <button onclick="saveUpdate()">Save</button>
     </div>
 </div>
 
@@ -62,14 +152,93 @@
         window.location.href = "login.html";
     }
 
+    // show user data
     document.getElementById("name").innerText = user.name;
     document.getElementById("email").innerText = user.email;
     document.getElementById("phone").innerText = user.phone;
     document.getElementById("address").innerText = user.address;
 
+    // toggle dropdown
+    function toggleMenu() {
+        const menu = document.getElementById("dropdown");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    // logout
     function logout() {
         localStorage.removeItem("user");
         window.location.href = "login.html";
+    }
+
+    // open update modal
+    function updateUser() {
+        document.getElementById("modal").style.display = "block";
+
+        document.getElementById("newName").value = user.name;
+        document.getElementById("newEmail").value = user.email;
+        document.getElementById("newPhone").value = user.phone;
+        document.getElementById("newAddress").value = user.address;
+    }
+
+    // save update
+    function saveUpdate() {
+
+        const updated = {
+            name: document.getElementById("newName").value,
+            email: document.getElementById("newEmail").value,
+            phone: document.getElementById("newPhone").value,
+            address: document.getElementById("newAddress").value
+        };
+
+        fetch(`http://localhost:8080/api/students/${user.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updated)
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            localStorage.setItem("user", JSON.stringify(data));
+
+            alert("Profile Updated Successfully!");
+
+            document.getElementById("modal").style.display = "none";
+
+            // update UI
+            document.getElementById("name").innerText = data.name;
+            document.getElementById("email").innerText = data.email;
+            document.getElementById("phone").innerText = data.phone;
+            document.getElementById("address").innerText = data.address;
+
+        })
+        .catch(err => {
+            alert("Update failed!");
+            console.error(err);
+        });
+    }
+
+    // delete user
+    function deleteUser() {
+        if (confirm("Are you sure you want to delete your account?")) {
+
+            fetch(`http://localhost:8080/api/students/${user.id}`, {
+                method: "DELETE"
+            })
+            .then(() => {
+                alert("Account deleted!");
+                localStorage.removeItem("user");
+                window.location.href = "register.html";
+            });
+        }
+    }
+
+    // close dropdown
+    window.onclick = function(e) {
+        if (!e.target.closest('.user-menu')) {
+            document.getElementById("dropdown").style.display = "none";
+        }
     }
 </script>
 
