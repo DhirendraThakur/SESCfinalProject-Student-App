@@ -39,4 +39,17 @@ public class StudentService {
         }
         return Optional.empty();
     }
+    public StudentEntities update(String id, StudentEntities updated) {
+        return repo.findById(id).map(student -> {
+            student.setName(updated.getName());
+            student.setEmail(updated.getEmail());
+            student.setPhone(updated.getPhone());
+            student.setAddress(updated.getAddress());
+            return repo.save(student);
+        }).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public void delete(String id) {
+        repo.deleteById(id);
+    }
 }
