@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family:Arial;
+            background:#f4f6f9;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+        }
+
+        .card {
+            background:white;
+            padding:30px;
+            width:350px;
+            border-radius:10px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align:center;
+        }
+
+        p {
+            margin:10px 0;
+        }
+
+        button {
+            width:100%;
+            padding:10px;
+            background:#4facfe;
+            color:white;
+            border:none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Profile</h2>
+
+    <p><b>Name:</b> <span id="name"></span></p>
+    <p><b>Email:</b> <span id="email"></span></p>
+    <p><b>Phone:</b> <span id="phone"></span></p>
+    <p><b>Address:</b> <span id="address"></span></p>
+
+    <button onclick="back()">Back</button>
+</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem("viewUser"));
+
+    if (!user) {
+        window.location.href = "dashboard.html";
+    }
+
+    document.getElementById("name").innerText = user.name;
+    document.getElementById("email").innerText = user.email;
+    document.getElementById("phone").innerText = user.phone || "N/A";
+    document.getElementById("address").innerText = user.address;
+</script>
+
+</body>
+</html>

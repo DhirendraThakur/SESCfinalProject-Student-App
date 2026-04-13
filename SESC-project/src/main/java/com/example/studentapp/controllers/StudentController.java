@@ -26,29 +26,19 @@ public class StudentController {
 
     // For login
     @PostMapping("/login")
-    public Object login(@RequestBody StudentEntities student) {
-        Optional<StudentEntities> user = studentService.login(student.getEmail(), student.getPassword());
-
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            return "Invalid email or password";
-        }
+    public StudentEntities login(@RequestBody StudentEntities student) {
+        return studentService.login(student.getEmail(), student.getPassword())
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
     }
 
     @PutMapping("/{id}")
-    public StudentEntities updateStudent(@PathVariable String id, @RequestBody StudentEntities updatedStudent) {
+    public StudentEntities update(@PathVariable String id, @RequestBody StudentEntities student) {
+        return studentService.update(id, student);
+    }
 
-        return studentService.getById(id).map(student -> {
-
-            student.setName(updatedStudent.getName());
-            student.setEmail(updatedStudent.getEmail());
-            student.setPhoneno(updatedStudent.getPhoneno());
-            student.setAddress(updatedStudent.getAddress());
-
-            return studentService.save(student);
-
-        }).orElseThrow(() -> new RuntimeException("User not found"));
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable String id) {
+        studentService.delete(id);
     }
 
 //    @GetMapping

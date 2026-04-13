@@ -17,5 +17,5 @@ public class StudentEntities {
         private String course;
         private String password;
         private String address;
-        private String phoneno;
+        private String phone;
 }
