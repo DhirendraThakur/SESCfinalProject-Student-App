@@ -1,6 +1,6 @@
 # SESC Student App
 
-A **Spring Boot** backend for a student-facing application: REST APIs for registration and login, plus simple static HTML pages (welcome, login, register, dashboard). Data is stored in **MongoDB**.
+A **Spring Boot** backend for a student-facing application: REST APIs for registration, login, courses, and enrolments, plus simple static HTML pages (welcome, login, register, dashboard). Data is stored in **MongoDB**.
 
 The runnable Maven project lives in **`SESC-project/`**.
 
@@ -11,7 +11,7 @@ The runnable Maven project lives in **`SESC-project/`**.
 | Layer | Technology |
 |--------|------------|
 | Runtime | Java **21** |
-| Framework | Spring Boot **4.x** (Web MVC, Data MongoDB) |
+| Framework | Spring Boot **3.x** (Web MVC, Data MongoDB) |
 | Database | **MongoDB** |
 | Build | **Maven** (wrapper included: `mvnw` / `mvnw.cmd`) |
 | Boilerplate | **Lombok** |
@@ -26,6 +26,18 @@ The runnable Maven project lives in **`SESC-project/`**.
 
 ---
 
+## Database Seeding
+
+When you start the application, a **Course Seeder** automatically checks if there are any courses in the database.
+If the `courses` collection is empty, it will automatically populate MongoDB with 3 sample test courses:
+1. Introduction to Algorithms
+2. Web Development
+3. Database Management
+
+This ensures that the application is immediately testable upon startup without requiring manual database inserts.
+
+---
+
 ## Project layout
 
 ```
@@ -37,10 +49,19 @@ SESCfinalProject-Student-App/
     └── src/main/
         ├── java/com/example/studentapp/
         │   ├── SescProjectApplication.java
-        │   ├── controllers/StudentController.java
-        │   ├── service/StudentService.java
-        │   ├── repositories/Student_Repositories.java
-        │   └── entities/StudentEntities.java
+        │   ├── controllers/
+        │   │   ├── StudentController.java
+        │   │   ├── CourseController.java
+        │   │   └── EnrolmentController.java
+        │   ├── service/
+        │   │   ├── StudentService.java
+        │   │   ├── CourseService.java
+        │   │   └── EnrolmentService.java
+        │   ├── repositories/
+        │   ├── entities/
+        │   ├── seeder/
+        │   │   └── CourseSeeder.java
+        │   └── dto/
         └── resources/
             ├── application.properties
             └── static/       ← HTML UI (index, login, register, dashboard)
@@ -80,13 +101,13 @@ Start your local MongoDB instance (or point the app at a remote URI — see **Co
 ### 5. Run the application
 
 ```bash
-./mvnw spring-boot:run
+./mvnw clean spring-boot:run
 ```
 
 On Windows:
 
 ```cmd
-mvnw.cmd spring-boot:run
+mvnw.cmd clean spring-boot:run
 ```
 
 ### 6. Open the app
@@ -113,17 +134,27 @@ java -jar target/SESC-project-0.0.1-SNAPSHOT.jar
 
 ## API overview
 
-Base path: **`/api/students`**
-
+### Students API (`/api/students`)
 | Method | Path | Description |
 |--------|------|-------------|
 | `POST` | `/api/students/register` | Register a new student (JSON body) |
 | `POST` | `/api/students/login` | Login with `email` and `password` in JSON |
 | `PUT` | `/api/students/{id}` | Update student by ID |
+| `DELETE` | `/api/students/{id}` | Delete student by ID |
 
-`StudentController` uses `@CrossOrigin` for browser access from other origins during development.
+### Courses API (`/api/courses`)
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET`  | `/api/courses` | Get all available courses |
+| `GET`  | `/api/courses/{id}` | Get course by ID |
 
-MongoDB collection: **`students`** (see `@Document` on `StudentEntities`).
+### Enrolments API (`/api/enrolments`)
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/enrolments` | Enroll a student in a course (requires `studentId`, `courseId`) |
+| `GET`  | `/api/enrolments/{studentId}` | Fetch all full course details a student is enrolled in |
+
+*Controllers use `@CrossOrigin` for browser access from other origins during development.*
 
 ---
 
@@ -151,9 +182,3 @@ Or use `spring.data.mongodb.host`, `port`, and `database` as needed.
 
 - **Security:** Login compares passwords as stored in the database; treat this as a course/demo baseline, not production-ready auth.
 - **IDE:** If you use IntelliJ, align the project SDK with **JDK 21+** so it matches the Maven compiler settings in `pom.xml`.
-
----
-
-## License
-
-See your course or team policy; no license is specified in this repository by default.
