@@ -25,6 +25,7 @@ public class CourseController {
     @GetMapping("/{id}")
     public Course getCourseById(@PathVariable String id) {
         return courseService.getCourseById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Course not found"));
     }
 }

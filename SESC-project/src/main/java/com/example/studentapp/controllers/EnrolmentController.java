@@ -20,6 +20,7 @@ public class EnrolmentController {
     }
 
     @PostMapping
+    @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.CREATED)
     public Enrolment enroll(@RequestBody EnrolmentRequestDTO request) {
         return enrolmentService.enrollStudent(request);
     }

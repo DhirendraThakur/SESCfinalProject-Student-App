@@ -324,7 +324,7 @@
             address: newAddress.value
         };
 
-        fetch(`http://localhost:8080/api/students/${user.id}`, {
+        fetch(`/api/students/${user.id}`, {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(updated)
@@ -340,7 +340,7 @@
     // delete
     function deleteUser() {
         if (confirm("Delete account?")) {
-            fetch(`http://localhost:8080/api/students/${user.id}`, {
+            fetch(`/api/students/${user.id}`, {
                 method: "DELETE"
             }).then(() => {
                 localStorage.clear();
@@ -358,53 +358,110 @@
 
     async function loadEnrolments() {
         try {
-            const res = await fetch(`http://localhost:8080/api/enrolments/${user.id}`);
+            const res = await fetch(`/api/enrolments/${user.id}`);
+            const grid = document.getElementById('enrolmentsGrid');
+            
+            if (!res.ok) {
+                grid.innerHTML = "<p>Error loading enrolments.</p>";
+                return;
+            }
             const enrolments = await res.json();
             
             myEnrolledCourseIds = enrolments.map(e => e.course.id);
-            const grid = document.getElementById('enrolmentsGrid');
             
             if (enrolments.length === 0) {
                 grid.innerHTML = "<p>You are not enrolled in any courses yet.</p>";
             } else {
-                grid.innerHTML = enrolments.map(e => `
-                    <div class="course-card">
-                        <h4>${e.course.title}</h4>
-                        <p>${e.course.description}</p>
-                        <p><b>Credits:</b> ${e.course.credits} | <b>Duration:</b> ${e.course.duration} weeks</p>
-                        <p><b>Status:</b> ${e.status}</p>
-                        <p><b>Enrolled:</b> ${new Date(e.enrolledAt).toLocaleDateString()}</p>
-                    </div>
-                `).join('');
+                grid.innerHTML = "";
+                enrolments.forEach(e => {
+                    const card = document.createElement('div');
+                    card.className = 'course-card';
+                    const title = document.createElement('h4');
+                    title.textContent = e.course.title;
+                    const description = document.createElement('p');
+                    description.textContent = e.course.description;
+                    const creditsDuration = document.createElement('p');
+                    const creditsLabel = document.createElement('b');
+                    creditsLabel.textContent = 'Credits:';
+                    creditsDuration.appendChild(creditsLabel);
+                    creditsDuration.appendChild(document.createTextNode(` ${e.course.credits} | `));
+                    const durationLabel = document.createElement('b');
+                    durationLabel.textContent = 'Duration:';
+                    creditsDuration.appendChild(durationLabel);
+                    creditsDuration.appendChild(document.createTextNode(` ${e.course.duration} weeks`));
+                    const status = document.createElement('p');
+                    const statusLabel = document.createElement('b');
+                    statusLabel.textContent = 'Status:';
+                    status.appendChild(statusLabel);
+                    status.appendChild(document.createTextNode(` ${e.status}`));
+                    const enrolled = document.createElement('p');
+                    const enrolledLabel = document.createElement('b');
+                    enrolledLabel.textContent = 'Enrolled:';
+                    enrolled.appendChild(enrolledLabel);
+                    enrolled.appendChild(document.createTextNode(` ${new Date(e.enrolledAt).toLocaleDateString()}`));
+                    card.appendChild(title);
+                    card.appendChild(description);
+                    card.appendChild(creditsDuration);
+                    card.appendChild(status);
+                    card.appendChild(enrolled);
+                    grid.appendChild(card);
+                });
             }
-            
-            loadCourses(); // Load courses after knowing what we are enrolled in
         } catch (err) {
             console.error("Error loading enrolments", err);
+        } finally {
+            loadCourses(); // Load courses even if enrolments fail
         }
     }
 
     async function loadCourses() {
         try {
-            const res = await fetch(`http://localhost:8080/api/courses`);
-            const courses = await res.json();
+            const res = await fetch(`/api/courses`);
             const grid = document.getElementById('coursesGrid');
+            
+            if (!res.ok) {
+                grid.innerHTML = "<p>Error loading courses.</p>";
+                return;
+            }
+            const courses = await res.json();
             
             if (courses.length === 0) {
                 grid.innerHTML = "<p>No courses available.</p>";
             } else {
-                grid.innerHTML = courses.map(c => {
+                grid.innerHTML = "";
+                courses.forEach(c => {
                     const isEnrolled = myEnrolledCourseIds.includes(c.id);
-                    return `
-                    <div class="course-card">
-                        <h4>${c.title}</h4>
-                        <p>${c.description}</p>
-                        <p><b>Credits:</b> ${c.credits} | <b>Duration:</b> ${c.duration} weeks</p>
-                        <button class="enrol-btn" onclick="enrol('${c.id}')" ${isEnrolled ? 'disabled' : ''}>
-                            ${isEnrolled ? 'Enrolled' : 'Enrol Now'}
-                        </button>
-                    </div>
-                `}).join('');
+                    const card = document.createElement('div');
+                    card.className = 'course-card';
+                    const title = document.createElement('h4');
+                    title.textContent = c.title;
+                    const description = document.createElement('p');
+                    description.textContent = c.description;
+                    const creditsDuration = document.createElement('p');
+                    const creditsLabel = document.createElement('b');
+                    creditsLabel.textContent = 'Credits:';
+                    creditsDuration.appendChild(creditsLabel);
+                    creditsDuration.appendChild(document.createTextNode(` ${c.credits} | `));
+                    const durationLabel = document.createElement('b');
+                    durationLabel.textContent = 'Duration:';
+                    creditsDuration.appendChild(durationLabel);
+                    creditsDuration.appendChild(document.createTextNode(` ${c.duration} weeks`));
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'enrol-btn';
+                    btn.textContent = isEnrolled ? 'Enrolled' : 'Enrol Now';
+                    if (isEnrolled) {
+                        btn.disabled = true;
+                    } else {
+                        btn.onclick = () => enrol(c.id);
+                    }
+
+                    card.appendChild(title);
+                    card.appendChild(description);
+                    card.appendChild(creditsDuration);
+                    card.appendChild(btn);
+                    grid.appendChild(card);
+                });
             }
         } catch (err) {
             console.error("Error loading courses", err);
@@ -414,7 +471,7 @@
     async function enrol(courseId) {
         try {
             const payload = { studentId: user.id, courseId: courseId };
-            const res = await fetch(`http://localhost:8080/api/enrolments`, {
+            const res = await fetch(`/api/enrolments`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
