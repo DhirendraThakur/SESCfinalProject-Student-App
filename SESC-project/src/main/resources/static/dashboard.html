@@ -136,6 +136,31 @@
             margin-top: 10px;
         }
 
+        /* COURSES & ENROLMENTS */
+        .full-width-section {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .course-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .course-card h4 { margin: 0 0 10px 0; color: #4facfe; }
+        .course-card p { margin: 5px 0; font-size: 14px; }
+        .enrol-btn { background: #28a745; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .enrol-btn[disabled] { background: #ccc; cursor: not-allowed; }
+
         /* ANIMATION */
         @keyframes fadeIn {
             from {opacity: 0;}
@@ -193,6 +218,23 @@
         </div>
     </div>
 
+</div>
+
+<!-- NEW SECTIONS FOR COURSES AND ENROLMENTS -->
+<div style="padding: 0 30px 30px;">
+    <div class="full-width-section">
+        <h3>My Enrolments</h3>
+        <div class="grid" id="enrolmentsGrid">
+            <p>Loading your enrolments...</p>
+        </div>
+    </div>
+
+    <div class="full-width-section">
+        <h3>Available Courses</h3>
+        <div class="grid" id="coursesGrid">
+            <p>Loading courses...</p>
+        </div>
+    </div>
 </div>
 
 <!-- UPDATE MODAL -->
@@ -310,6 +352,90 @@
     // services
     function finance() { alert("Finance coming soon"); }
     function library() { alert("Library coming soon"); }
+
+    // --- COURSES & ENROLMENTS LOGIC ---
+    let myEnrolledCourseIds = [];
+
+    async function loadEnrolments() {
+        try {
+            const res = await fetch(`http://localhost:8080/api/enrolments/${user.id}`);
+            const enrolments = await res.json();
+            
+            myEnrolledCourseIds = enrolments.map(e => e.course.id);
+            const grid = document.getElementById('enrolmentsGrid');
+            
+            if (enrolments.length === 0) {
+                grid.innerHTML = "<p>You are not enrolled in any courses yet.</p>";
+            } else {
+                grid.innerHTML = enrolments.map(e => `
+                    <div class="course-card">
+                        <h4>${e.course.title}</h4>
+                        <p>${e.course.description}</p>
+                        <p><b>Credits:</b> ${e.course.credits} | <b>Duration:</b> ${e.course.duration} weeks</p>
+                        <p><b>Status:</b> ${e.status}</p>
+                        <p><b>Enrolled:</b> ${new Date(e.enrolledAt).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+            }
+            
+            loadCourses(); // Load courses after knowing what we are enrolled in
+        } catch (err) {
+            console.error("Error loading enrolments", err);
+        }
+    }
+
+    async function loadCourses() {
+        try {
+            const res = await fetch(`http://localhost:8080/api/courses`);
+            const courses = await res.json();
+            const grid = document.getElementById('coursesGrid');
+            
+            if (courses.length === 0) {
+                grid.innerHTML = "<p>No courses available.</p>";
+            } else {
+                grid.innerHTML = courses.map(c => {
+                    const isEnrolled = myEnrolledCourseIds.includes(c.id);
+                    return `
+                    <div class="course-card">
+                        <h4>${c.title}</h4>
+                        <p>${c.description}</p>
+                        <p><b>Credits:</b> ${c.credits} | <b>Duration:</b> ${c.duration} weeks</p>
+                        <button class="enrol-btn" onclick="enrol('${c.id}')" ${isEnrolled ? 'disabled' : ''}>
+                            ${isEnrolled ? 'Enrolled' : 'Enrol Now'}
+                        </button>
+                    </div>
+                `}).join('');
+            }
+        } catch (err) {
+            console.error("Error loading courses", err);
+        }
+    }
+
+    async function enrol(courseId) {
+        try {
+            const payload = { studentId: user.id, courseId: courseId };
+            const res = await fetch(`http://localhost:8080/api/enrolments`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            });
+            
+            if (res.ok) {
+                alert("Successfully enrolled!");
+                loadEnrolments(); // Refresh lists
+            } else {
+                alert("Failed to enrol.");
+            }
+        } catch (err) {
+            console.error("Error enrolling", err);
+        }
+    }
+
+    // Load data on start
+    if (user) {
+        loadEnrolments();
+    }
+    // ----------------------------------
 
     // PROFILE MODAL
     function details() {
