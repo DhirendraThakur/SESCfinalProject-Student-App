@@ -18,4 +18,5 @@ public class StudentEntities {
         private String password;
         private String address;
         private String phone;
+        private String role;
 }

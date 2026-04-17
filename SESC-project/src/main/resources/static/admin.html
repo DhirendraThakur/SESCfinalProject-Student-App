@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin:0;
+            font-family:'Poppins', sans-serif;
+            background:#f4f6f9;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width:220px;
+            height:100vh;
+            background:#1e293b;
+            color:white;
+            position:fixed;
+            padding:20px;
+        }
+        .sidebar button {
+            width:100%;
+            padding:10px;
+            margin:10px 0;
+            background:#334155;
+            border:none;
+            color:white;
+            cursor:pointer;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left:240px;
+            padding:20px;
+        }
+
+        /* CARD */
+        .card {
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            margin-bottom:20px;
+        }
+
+        /* TABLE */
+        table {
+            width:100%;
+            border-collapse:collapse;
+        }
+        td, th {
+            padding:10px;
+            border-bottom:1px solid #ddd;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding:6px 10px;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+        .btn-primary { background:#3b82f6; color:white; }
+        .btn-danger { background:red; color:white; }
+        .btn-warning { background:orange; color:white; }
+
+        /* BADGE */
+        .badge {
+            padding:5px 10px;
+            border-radius:5px;
+            color:white;
+        }
+        .available { background:green; }
+        .issued { background:red; }
+
+        /* MODAL */
+        .modal {
+            display:none;
+            position:fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background:rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background:white;
+            padding:20px;
+            width:350px;
+            margin:10% auto;
+            border-radius:10px;
+        }
+
+        input, select {
+            width:100%;
+            padding:8px;
+            margin:5px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>Admin</h2>
+    <button onclick="showSection('students')">Students</button>
+    <button onclick="showSection('library')">Library</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- STUDENTS -->
+    <div id="students" class="card">
+        <h3>Students</h3>
+        <button class="btn btn-primary" onclick="loadStudents()">Show All Students</button>
+        <table id="studentTable"></table>
+    </div>
+
+    <!-- LIBRARY -->
+    <div id="library" class="card">
+        <h3>Library</h3>
+        <button class="btn btn-primary" onclick="openBookModal()">+ Add Book</button>
+        <table id="bookTable"></table>
+
+        <h4>Borrowed Books</h4>
+        <table id="borrowTable"></table>
+    </div>
+
+</div>
+
+<!-- ADD BOOK MODAL -->
+<div class="modal" id="bookModal">
+    <div class="modal-content">
+        <h3>Add Book</h3>
+        <input id="title" placeholder="Title">
+        <input id="author" placeholder="Author">
+        <button class="btn btn-primary" onclick="saveBook()">Save</button>
+        <button onclick="closeBookModal()">Close</button>
+    </div>
+</div>
+
+<!-- EDIT BOOK MODAL -->
+<div class="modal" id="bookEditModal">
+    <div class="modal-content">
+        <h3>Edit Book</h3>
+        <input id="bTitle" placeholder="Title">
+        <input id="bAuthor" placeholder="Author">
+        <button onclick="updateBook()">Update</button>
+        <button onclick="closeBookEdit()">Cancel</button>
+    </div>
+</div>
+
+<!-- EDIT STUDENT MODAL -->
+<div class="modal" id="studentEditModal">
+    <div class="modal-content">
+        <h3>Edit Student</h3>
+        <input id="sName" placeholder="Name">
+        <input id="sEmail" placeholder="Email">
+        <input id="sPhone" placeholder="Phone">
+        <input id="sAddress" placeholder="Address">
+        <button onclick="updateStudent()">Update</button>
+        <button onclick="closeStudentModal()">Cancel</button>
+    </div>
+</div>
+
+<!-- ISSUE BOOK MODAL -->
+<div class="modal" id="issueModal">
+    <div class="modal-content">
+        <h3>Issue Book</h3>
+        <select id="studentSelect"></select>
+        <button onclick="confirmIssue()">Issue</button>
+        <button onclick="closeIssue()">Cancel</button>
+    </div>
+</div>
+
+<script>
+
+    // NAVIGATION
+    function showSection(id){
+        document.getElementById("students").style.display="none";
+        document.getElementById("library").style.display="none";
+        document.getElementById(id).style.display="block";
+    }
+    showSection("students");
+
+    // ================= STUDENTS =================
+    let studentEditId;
+
+    function loadStudents(){
+    fetch("/api/admin/students")
+    .then(res=>res.json())
+    .then(data=>{
+        studentTable.innerHTML="";
+        studentSelect.innerHTML="";
+
+        data.forEach(s=>{
+            studentTable.innerHTML += `
+            <tr>
+            <td>${s.name}</td>
+            <td>${s.email}</td>
+            <td>
+            <button class="btn btn-warning" onclick="editStudent('${s.id}','${s.name}','${s.email}','${s.phone}','${s.address}')">Edit</button>
+            <button class="btn btn-danger" onclick="deleteStudent('${s.id}')">Delete</button>
+            </td>
+            </tr>`;
+
+            studentSelect.innerHTML += `<option value="${s.id}|${s.name}">${s.name}</option>`;
+        });
+    });
+    }
+
+    function deleteStudent(id){
+    fetch(`/api/admin/students/${id}`,{method:"DELETE"})
+    .then(()=>loadStudents());
+    }
+
+    function editStudent(id,name,email,phone,address){
+    studentEditId=id;
+    sName.value=name;
+    sEmail.value=email;
+    sPhone.value=phone;
+    sAddress.value=address;
+    studentEditModal.style.display="block";
+    }
+
+    function closeStudentModal(){
+    studentEditModal.style.display="none";
+    }
+
+    function updateStudent(){
+    fetch(`/api/admin/students/${studentEditId}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    name:sName.value,
+    email:sEmail.value,
+    phone:sPhone.value,
+    address:sAddress.value
+    })
+    })
+    .then(()=>{
+    closeStudentModal();
+    loadStudents();
+    });
+    }
+
+    // ================= BOOK =================
+    let bookEditId;
+
+    function openBookModal(){ bookModal.style.display="block"; }
+    function closeBookModal(){ bookModal.style.display="none"; }
+
+    function saveBook(){
+    fetch("/api/admin/books",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    title:title.value,
+    author:author.value
+    })
+    })
+    .then(()=>{
+    closeBookModal();
+    loadBooks();
+    });
+    }
+
+    function loadBooks(){
+    fetch("/api/admin/books")
+    .then(res=>res.json())
+    .then(data=>{
+        bookTable.innerHTML="";
+        data.forEach(b=>{
+            bookTable.innerHTML += `
+            <tr>
+            <td>${b.title}</td>
+            <td>${b.author}</td>
+            <td>
+            <span class="badge ${b.available?'available':'issued'}">
+            ${b.available?'Available':'Issued'}
+            </span>
+            </td>
+            <td>
+            <button class="btn btn-warning" onclick="editBook('${b.id}','${b.title}','${b.author}')">Edit</button>
+            <button class="btn btn-primary" onclick="openIssue('${b.id}','${b.title}')">Issue</button>
+            <button class="btn btn-danger" onclick="deleteBook('${b.id}')">Delete</button>
+            </td>
+            </tr>`;
+        });
+    });
+    }
+
+    function deleteBook(id){
+    fetch(`/api/admin/books/${id}`,{method:"DELETE"})
+    .then(()=>loadBooks());
+    }
+
+    function editBook(id,titleVal,authorVal){
+    bookEditId=id;
+    bTitle.value=titleVal;
+    bAuthor.value=authorVal;
+    bookEditModal.style.display="block";
+    }
+
+    function closeBookEdit(){
+    bookEditModal.style.display="none";
+    }
+
+    function updateBook(){
+    fetch(`/api/admin/books/${bookEditId}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    title:bTitle.value,
+    author:bAuthor.value
+    })
+    })
+    .then(()=>{
+    closeBookEdit();
+    loadBooks();
+    });
+    }
+
+    // ================= ISSUE =================
+    let selectedBookId, selectedBookTitle;
+
+    function openIssue(id,title){
+    selectedBookId=id;
+    selectedBookTitle=title;
+    issueModal.style.display="block";
+    }
+
+    function closeIssue(){
+    issueModal.style.display="none";
+    }
+
+    function confirmIssue(){
+    const val = studentSelect.value.split("|");
+
+    fetch("/api/admin/borrow",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    studentId:val[0],
+    studentName:val[1],
+    bookId:selectedBookId,
+    bookTitle:selectedBookTitle
+    })
+    })
+    .then(()=>{
+    closeIssue();
+    loadBooks();
+    loadBorrow();
+    });
+    }
+
+    // ================= BORROW =================
+    function loadBorrow(){
+    fetch("/api/admin/borrow")
+    .then(res=>res.json())
+    .then(data=>{
+        borrowTable.innerHTML="";
+        data.forEach(b=>{
+            borrowTable.innerHTML += `
+            <tr>
+            <td>${b.studentName}</td>
+            <td>${b.bookTitle}</td>
+            </tr>`;
+        });
+    });
+    }
+
+    // INIT
+    loadStudents();
+    loadBooks();
+    loadBorrow();
+
+</script>
+
+
+</body>
+</html>
