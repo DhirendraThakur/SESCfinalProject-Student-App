@@ -4,6 +4,8 @@ import com.example.studentapp.entities.Book;
 import com.example.studentapp.entities.BorrowBook;
 import com.example.studentapp.repositories.BookRepository;
 import com.example.studentapp.repositories.BorrowRepository;
+import com.example.studentapp.repositories.Student_Repositories;
+import com.example.studentapp.entities.StudentEntities;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,10 +16,14 @@ public class LibraryService {
 
     private final BookRepository bookRepository;
     private final BorrowRepository borrowRepository;
+    private final Student_Repositories studentRepository;
 
-    public LibraryService(BookRepository bookRepository, BorrowRepository borrowRepository) {
+    public LibraryService(BookRepository bookRepository, 
+                          BorrowRepository borrowRepository,
+                          Student_Repositories studentRepository) {
         this.bookRepository = bookRepository;
         this.borrowRepository = borrowRepository;
+        this.studentRepository = studentRepository;
     }
 
     public List<Book> getAllBooks() {
@@ -39,9 +45,16 @@ public class LibraryService {
         book.setAvailable(false);
         bookRepository.save(book);
 
+        // Resolve student name from database for accuracy
+        String resolvedName = studentName;
+        StudentEntities student = studentRepository.findById(studentId).orElse(null);
+        if (student != null && student.getName() != null) {
+            resolvedName = student.getName();
+        }
+
         BorrowBook borrowBook = new BorrowBook();
         borrowBook.setStudentId(studentId);
-        borrowBook.setStudentName(studentName);
+        borrowBook.setStudentName(resolvedName);
         borrowBook.setBookId(book.getId());
         borrowBook.setBookTitle(book.getTitle());
         borrowBook.setBorrowedAt(LocalDateTime.now());

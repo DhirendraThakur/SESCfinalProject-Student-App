@@ -81,6 +81,11 @@ public class AdminController {
         book.setAvailable(false);
         bookRepo.save(book);
 
+        // Resolve student name for accuracy
+        studentRepo.findById(borrow.getStudentId()).ifPresent(s -> {
+            if (s.getName() != null) borrow.setStudentName(s.getName());
+        });
+
         // set new fields
         borrow.setBorrowedAt(LocalDateTime.now());
         borrow.setDueDate(LocalDateTime.now().plusDays(14));
@@ -101,5 +106,13 @@ public class AdminController {
                 .filter(b -> "BORROWED".equals(b.getStatus()))
                 .filter(b -> b.getDueDate().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
+    }
+
+    @DeleteMapping("/borrow/cleanup")
+    public void cleanupDirtyRecords() {
+        List<BorrowBook> toDelete = borrowRepo.findAll().stream()
+                .filter(b -> b.getStudentName() == null || b.getStatus() == null || b.getBorrowedAt() == null)
+                .collect(Collectors.toList());
+        borrowRepo.deleteAll(toDelete);
     }
 }

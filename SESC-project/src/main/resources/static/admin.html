@@ -75,6 +75,8 @@
         }
         .available { background:green; }
         .issued { background:red; }
+        .BORROWED { background:orange; }
+        .RETURNED { background:green; }
 
         /* MODAL */
         .modal {
@@ -203,15 +205,15 @@
         data.forEach(s=>{
             studentTable.innerHTML += `
             <tr>
-            <td>${s.name}</td>
+            <td>${s.name || '<span style="color:red">Missing Name</span>'}</td>
             <td>${s.email}</td>
             <td>
-            <button class="btn btn-warning" onclick="editStudent('${s.id}','${s.name}','${s.email}','${s.phone}','${s.address}')">Edit</button>
+            <button class="btn btn-warning" onclick="editStudent('${s.id}','${s.name || ''}','${s.email || ''}','${s.phone || ''}','${s.address || ''}')">Edit</button>
             <button class="btn btn-danger" onclick="deleteStudent('${s.id}')">Delete</button>
             </td>
             </tr>`;
 
-            studentSelect.innerHTML += `<option value="${s.id}|${s.name}">${s.name}</option>`;
+            studentSelect.innerHTML += `<option value="${s.id}|${s.name || 'No Name'}">${s.name || 'No Name'}</option>`;
         });
     });
     }
@@ -366,12 +368,19 @@
     fetch("/api/admin/borrow")
     .then(res=>res.json())
     .then(data=>{
-        borrowTable.innerHTML="";
+        borrowTable.innerHTML="<tr><th>Student Name</th><th>Book Title</th><th>Borrowed Date</th><th>Due Date</th><th>Status</th></tr>";
         data.forEach(b=>{
+            const borrowedDate = b.borrowedAt ? new Date(b.borrowedAt).toLocaleDateString('en-GB') : '-';
+            const dueDate = b.dueDate ? new Date(b.dueDate).toLocaleDateString('en-GB') : '-';
+            const status = b.status || 'UNKNOWN';
+            
             borrowTable.innerHTML += `
             <tr>
-            <td>${b.studentName}</td>
-            <td>${b.bookTitle}</td>
+            <td>${b.studentName || '-'}</td>
+            <td>${b.bookTitle || '-'}</td>
+            <td>${borrowedDate}</td>
+            <td>${dueDate}</td>
+            <td><span class="badge ${status}">${status}</span></td>
             </tr>`;
         });
     });
