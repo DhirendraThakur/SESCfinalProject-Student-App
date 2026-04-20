@@ -127,6 +127,10 @@
 
         <h4>Borrowed Books</h4>
         <table id="borrowTable"></table>
+
+        <h4>Overdue Books</h4>
+        <button class="btn btn-danger" onclick="loadOverdue()">Load Overdue Books</button>
+        <table id="overdueTable"></table>
     </div>
 
 </div>
@@ -373,10 +377,35 @@
     });
     }
 
+    function loadOverdue(){
+    fetch("/api/admin/borrow/overdue")
+    .then(res=>res.json())
+    .then(data=>{
+        overdueTable.innerHTML="<tr><th>Student</th><th>Book</th><th>Borrowed</th><th>Due</th><th>Days Overdue</th></tr>";
+        const today = new Date();
+        data.forEach(b=>{
+            const dueDate = new Date(b.dueDate);
+            const diffTime = today - dueDate;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const rowStyle = diffDays > 7 ? 'style="background:#ffcccc"' : '';
+
+            overdueTable.innerHTML += `
+            <tr ${rowStyle}>
+            <td>${b.studentName}</td>
+            <td>${b.bookTitle}</td>
+            <td>${new Date(b.borrowedAt).toLocaleDateString()}</td>
+            <td>${dueDate.toLocaleDateString()}</td>
+            <td>${diffDays}</td>
+            </tr>`;
+        });
+    });
+    }
+
     // INIT
     loadStudents();
     loadBooks();
     loadBorrow();
+    loadOverdue();
 
 </script>
 

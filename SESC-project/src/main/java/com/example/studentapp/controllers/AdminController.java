@@ -4,7 +4,9 @@ import com.example.studentapp.entities.*;
 import com.example.studentapp.repositories.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -79,11 +81,25 @@ public class AdminController {
         book.setAvailable(false);
         bookRepo.save(book);
 
+        // set new fields
+        borrow.setBorrowedAt(LocalDateTime.now());
+        borrow.setDueDate(LocalDateTime.now().plusDays(14));
+        borrow.setReturnedAt(null);
+        borrow.setStatus("BORROWED");
+
         return borrowRepo.save(borrow);
     }
 
     @GetMapping("/borrow")
     public List<BorrowBook> getBorrowDetails() {
         return borrowRepo.findAll();
+    }
+
+    @GetMapping("/borrow/overdue")
+    public List<BorrowBook> getOverdueLoans() {
+        return borrowRepo.findAll().stream()
+                .filter(b -> "BORROWED".equals(b.getStatus()))
+                .filter(b -> b.getDueDate().isBefore(LocalDateTime.now()))
+                .collect(Collectors.toList());
     }
 }
