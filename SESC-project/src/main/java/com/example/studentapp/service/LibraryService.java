@@ -48,8 +48,12 @@ public class LibraryService {
         // Resolve student name from database for accuracy
         String resolvedName = studentName;
         StudentEntities student = studentRepository.findById(studentId).orElse(null);
-        if (student != null && student.getName() != null) {
-            resolvedName = student.getName();
+        if (student != null) {
+            if (student.getName() != null && !student.getName().trim().isEmpty()) {
+                resolvedName = student.getName();
+            } else if (student.getEmail() != null) {
+                resolvedName = student.getEmail();
+            }
         }
 
         BorrowBook borrowBook = new BorrowBook();

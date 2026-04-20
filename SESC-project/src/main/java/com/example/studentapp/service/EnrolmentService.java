@@ -4,8 +4,10 @@ import com.example.studentapp.dto.EnrolmentRequestDTO;
 import com.example.studentapp.dto.EnrolmentResponseDTO;
 import com.example.studentapp.entities.Course;
 import com.example.studentapp.entities.Enrolment;
+import com.example.studentapp.entities.StudentEntities;
 import com.example.studentapp.repositories.CourseRepository;
 import com.example.studentapp.repositories.EnrolmentRepository;
+import com.example.studentapp.repositories.Student_Repositories;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,16 +16,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class EnrolmentService {
 
     private final EnrolmentRepository enrolmentRepository;
     private final CourseRepository courseRepository;
+    private final Student_Repositories studentRepository;
 
-    public EnrolmentService(EnrolmentRepository enrolmentRepository, CourseRepository courseRepository) {
+    public EnrolmentService(EnrolmentRepository enrolmentRepository, 
+                            CourseRepository courseRepository,
+                            Student_Repositories studentRepository) {
         this.enrolmentRepository = enrolmentRepository;
         this.courseRepository = courseRepository;
+        this.studentRepository = studentRepository;
     }
 
     public Enrolment enrollStudent(EnrolmentRequestDTO request) {
@@ -55,21 +62,68 @@ public class EnrolmentService {
         }
 
         List<String> courseIds = enrolments.stream().map(Enrolment::getCourseId).collect(Collectors.toList());
-        List<Course> courses = (List<Course>) courseRepository.findAllById(courseIds);
+        Iterable<Course> coursesSnapshot = courseRepository.findAllById(courseIds);
         
-        Map<String, Course> courseMap = courses.stream()
+        Map<String, Course> courseMap = StreamSupport.stream(coursesSnapshot.spliterator(), false)
                 .collect(Collectors.toMap(Course::getId, c -> c));
 
         for (Enrolment e : enrolments) {
             Course course = courseMap.get(e.getCourseId());
+            // If course is missing, we still want to show the enrolment but with a placeholder
             if (course == null) {
-                throw new IllegalStateException(
-                        "Enrolment " + e.getId() + " references missing course " + e.getCourseId()
-                );
+                course = new Course();
+                course.setTitle("Unknown Course");
+                course.setDescription("Course details not found");
             }
+            
+            String studentName = studentRepository.findById(e.getStudentId())
+                    .map(s -> (s.getName() != null && !s.getName().trim().isEmpty()) ? s.getName() : s.getEmail())
+                    .orElse("Unknown Student");
+
             responses.add(new EnrolmentResponseDTO(
                     e.getId(),
                     e.getStudentId(),
+                    studentName,
+                    course,
+                    e.getEnrolledAt(),
+                    e.getStatus()
+            ));
+        }
+        return responses;
+    }
+
+    public List<EnrolmentResponseDTO> getAllEnrolments() {
+        List<Enrolment> enrolments = enrolmentRepository.findAll();
+        List<EnrolmentResponseDTO> responses = new ArrayList<>();
+        
+        if (enrolments.isEmpty()) return responses;
+
+        // Bulk fetch courses and students for efficiency
+        List<String> courseIds = enrolments.stream().map(Enrolment::getCourseId).distinct().collect(Collectors.toList());
+        List<String> studentIds = enrolments.stream().map(Enrolment::getStudentId).distinct().collect(Collectors.toList());
+        
+        Iterable<Course> coursesSnapshot = courseRepository.findAllById(courseIds);
+        Map<String, Course> courseMap = StreamSupport.stream(coursesSnapshot.spliterator(), false)
+                .collect(Collectors.toMap(Course::getId, c -> c));
+        
+        Iterable<StudentEntities> studentsSnapshot = studentRepository.findAllById(studentIds);
+        Map<String, String> studentMap = StreamSupport.stream(studentsSnapshot.spliterator(), false)
+                .collect(Collectors.toMap(StudentEntities::getId, 
+                    s -> (s.getName() != null && !s.getName().trim().isEmpty()) ? s.getName() : 
+                         (s.getEmail() != null ? s.getEmail() : "No Name")));
+
+        for (Enrolment e : enrolments) {
+            Course course = courseMap.get(e.getCourseId());
+            if (course == null) {
+                course = new Course();
+                course.setTitle("Unknown Course");
+                course.setDescription("Course details not found");
+            }
+
+            responses.add(new EnrolmentResponseDTO(
+                    e.getId(),
+                    e.getStudentId(),
+                    studentMap.getOrDefault(e.getStudentId(), "Unknown"),
                     course,
                     e.getEnrolledAt(),
                     e.getStatus()

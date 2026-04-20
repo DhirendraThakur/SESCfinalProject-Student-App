@@ -77,6 +77,9 @@
         .issued { background:red; }
         .BORROWED { background:orange; }
         .RETURNED { background:green; }
+        .ACTIVE { background:green; }
+        .COMPLETED { background:grey; }
+        .DROPPED { background:red; }
 
         /* MODAL */
         .modal {
@@ -109,6 +112,8 @@
     <h2>Admin</h2>
     <button onclick="showSection('students')">Students</button>
     <button onclick="showSection('library')">Library</button>
+    <button onclick="showSection('courses')">Courses</button>
+    <button onclick="showSection('enrolments')">Enrolments</button>
 </div>
 
 <!-- MAIN -->
@@ -133,6 +138,19 @@
         <h4>Overdue Books</h4>
         <button class="btn btn-danger" onclick="loadOverdue()">Load Overdue Books</button>
         <table id="overdueTable"></table>
+    </div>
+
+    <!-- COURSES -->
+    <div id="courses" class="card">
+        <h3>Courses</h3>
+        <button class="btn btn-primary" onclick="openCourseModal()">+ Add Course</button>
+        <table id="courseTable"></table>
+    </div>
+
+    <!-- ENROLMENTS -->
+    <div id="enrolments" class="card">
+        <h3>Enrolments</h3>
+        <table id="enrolmentTable"></table>
     </div>
 
 </div>
@@ -182,13 +200,42 @@
     </div>
 </div>
 
+<!-- ADD COURSE MODAL -->
+<div class="modal" id="courseModal">
+    <div class="modal-content">
+        <h3>Add Course</h3>
+        <input id="cTitle" placeholder="Title">
+        <input id="cDesc" placeholder="Description">
+        <input id="cCredits" type="number" placeholder="Credits">
+        <input id="cDuration" type="number" placeholder="Duration (weeks)">
+        <button class="btn btn-primary" onclick="saveCourse()">Save</button>
+        <button onclick="closeCourseModal()">Close</button>
+    </div>
+</div>
+
+<!-- EDIT COURSE MODAL -->
+<div class="modal" id="courseEditModal">
+    <div class="modal-content">
+        <h3>Edit Course</h3>
+        <input id="ecTitle" placeholder="Title">
+        <input id="ecDesc" placeholder="Description">
+        <input id="ecCredits" type="number" placeholder="Credits">
+        <input id="ecDuration" type="number" placeholder="Duration (weeks)">
+        <button class="btn btn-primary" onclick="updateCourse()">Update</button>
+        <button onclick="closeCourseEdit()">Cancel</button>
+    </div>
+</div>
+
 <script>
 
     // NAVIGATION
     function showSection(id){
         document.getElementById("students").style.display="none";
         document.getElementById("library").style.display="none";
+        document.getElementById("courses").style.display="none";
+        document.getElementById("enrolments").style.display="none";
         document.getElementById(id).style.display="block";
+        if(id === 'enrolments') loadEnrolments();
     }
     showSection("students");
 
@@ -213,7 +260,8 @@
             </td>
             </tr>`;
 
-            studentSelect.innerHTML += `<option value="${s.id}|${s.name || 'No Name'}">${s.name || 'No Name'}</option>`;
+            const displayName = s.name || s.email || 'Unknown';
+            studentSelect.innerHTML += `<option value="${s.id}|${displayName}">${displayName}</option>`;
         });
     });
     }
@@ -376,7 +424,7 @@
             
             borrowTable.innerHTML += `
             <tr>
-            <td>${b.studentName || '-'}</td>
+            <td>${b.studentName || 'Unknown'}</td>
             <td>${b.bookTitle || '-'}</td>
             <td>${borrowedDate}</td>
             <td>${dueDate}</td>
@@ -410,11 +458,108 @@
     });
     }
 
+    // ================= COURSES =================
+    let courseEditId;
+
+    function openCourseModal() { courseModal.style.display="block"; }
+    function closeCourseModal() { courseModal.style.display="none"; }
+
+    function saveCourse(){
+        fetch("/api/courses", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({
+                title: cTitle.value,
+                description: cDesc.value,
+                credits: parseInt(cCredits.value),
+                duration: parseInt(cDuration.value)
+            })
+        }).then(() => {
+            closeCourseModal();
+            loadCourses();
+        });
+    }
+
+    function loadCourses(){
+        fetch("/api/courses")
+        .then(res => res.json())
+        .then(data => {
+            courseTable.innerHTML = "<tr><th>Title</th><th>Description</th><th>Credits</th><th>Duration</th><th>Actions</th></tr>";
+            data.forEach(c => {
+                courseTable.innerHTML += `
+                <tr>
+                    <td>${c.title}</td>
+                    <td>${c.description}</td>
+                    <td>${c.credits}</td>
+                    <td>${c.duration} weeks</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editCourse('${c.id}','${c.title}','${c.description}',${c.credits},${c.duration})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteCourse('${c.id}')">Delete</button>
+                    </td>
+                </tr>`;
+            });
+        });
+    }
+
+    function deleteCourse(id){
+        if(!confirm("Are you sure?")) return;
+        fetch(`/api/courses/${id}`, { method: "DELETE" })
+        .then(() => loadCourses());
+    }
+
+    function editCourse(id, title, desc, credits, duration){
+        courseEditId = id;
+        ecTitle.value = title;
+        ecDesc.value = desc;
+        ecCredits.value = credits;
+        ecDuration.value = duration;
+        courseEditModal.style.display = "block";
+    }
+
+    function closeCourseEdit() { courseEditModal.style.display = "none"; }
+
+    function updateCourse(){
+        fetch(`/api/courses/${courseEditId}`, {
+            method: "PUT",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({
+                title: ecTitle.value,
+                description: ecDesc.value,
+                credits: parseInt(ecCredits.value),
+                duration: parseInt(ecDuration.value)
+            })
+        }).then(() => {
+            closeCourseEdit();
+            loadCourses();
+        });
+    }
+
+    // ================= ENROLMENTS =================
+    function loadEnrolments(){
+        fetch("/api/enrolments")
+        .then(res => res.json())
+        .then(data => {
+            enrolmentTable.innerHTML = "<tr><th>Student Name</th><th>Course Title</th><th>Enrolled Date</th><th>Status</th></tr>";
+            data.forEach(e => {
+                const date = new Date(e.enrolledAt).toLocaleDateString('en-GB');
+                enrolmentTable.innerHTML += `
+                <tr>
+                    <td>${e.studentName}</td>
+                    <td>${e.course ? e.course.title : 'Deleted Course'}</td>
+                    <td>${date}</td>
+                    <td><span class="badge ${e.status}">${e.status}</span></td>
+                </tr>`;
+            });
+        });
+    }
+
     // INIT
     loadStudents();
     loadBooks();
     loadBorrow();
     loadOverdue();
+    loadCourses();
+    loadEnrolments();
 
 </script>
 

@@ -123,8 +123,6 @@
 </div>
 
 <script>
-    // The prompt requested 'student', but dashboard.html actually uses 'user'.
-    // We check both to be perfectly safe, prioritizing 'user'.
     const user = JSON.parse(localStorage.getItem("user")) || JSON.parse(localStorage.getItem("student"));
 
     if (!user) {
@@ -167,7 +165,7 @@
 
     async function loadHistory() {
         try {
-            const res = await fetch(\`/api/library/history/\${user.id}\`);
+            const res = await fetch(`/api/library/history/${user.id}`);
             const grid = document.getElementById('historyGrid');
             
             if (!res.ok) {
@@ -184,24 +182,23 @@
                     const card = document.createElement('div');
                     card.className = 'book-card';
                     
-                    // Display formatted date DD/MM/YYYY
                     const borrowedAt = new Date(h.borrowedAt).toLocaleDateString('en-GB');
                     const dueDate = new Date(h.dueDate).toLocaleDateString('en-GB');
                     
                     let returnHtml = "";
                     if (h.status === "BORROWED") {
-                        returnHtml = \`<button class="return-btn" onclick="returnBook('\${h.id}')">Return</button>\`;
+                        returnHtml = `<button class="return-btn" onclick="returnBook('${h.id}')">Return</button>`;
                     }
                     
-                    card.innerHTML = \`
+                    card.innerHTML = `
                         <div>
-                            <h4>\${h.bookTitle}</h4>
-                            <p><b>Borrowed:</b> \${borrowedAt}</p>
-                            <p><b>Due:</b> \${dueDate}</p>
-                            <p><span class="badge \${h.status}">\${h.status}</span></p>
+                            <h4>${h.bookTitle}</h4>
+                            <p><b>Borrowed:</b> ${borrowedAt}</p>
+                            <p><b>Due:</b> ${dueDate}</p>
+                            <p><span class="badge ${h.status}">${h.status}</span></p>
                         </div>
-                        \${returnHtml}
-                    \`;
+                        ${returnHtml}
+                    `;
                     grid.appendChild(card);
                 });
             }
@@ -239,7 +236,7 @@
     }
 
     function returnBook(borrowId) {
-        fetch(\`/api/library/return/\${borrowId}\`, {
+        fetch(`/api/library/return/${borrowId}`, {
             method: 'POST'
         })
         .then(async res => {
@@ -257,7 +254,6 @@
         });
     }
 
-    // Load data on start
     loadBooks();
     loadHistory();
 

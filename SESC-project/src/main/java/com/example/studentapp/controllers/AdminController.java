@@ -83,7 +83,11 @@ public class AdminController {
 
         // Resolve student name for accuracy
         studentRepo.findById(borrow.getStudentId()).ifPresent(s -> {
-            if (s.getName() != null) borrow.setStudentName(s.getName());
+            if (s.getName() != null && !s.getName().trim().isEmpty()) {
+                borrow.setStudentName(s.getName());
+            } else if (s.getEmail() != null) {
+                borrow.setStudentName(s.getEmail());
+            }
         });
 
         // set new fields
@@ -97,15 +101,33 @@ public class AdminController {
 
     @GetMapping("/borrow")
     public List<BorrowBook> getBorrowDetails() {
-        return borrowRepo.findAll();
+        List<BorrowBook> loans = borrowRepo.findAll();
+        loans.forEach(this::resolveBorrowName);
+        return loans;
     }
 
     @GetMapping("/borrow/overdue")
     public List<BorrowBook> getOverdueLoans() {
-        return borrowRepo.findAll().stream()
+        List<BorrowBook> overdue = borrowRepo.findAll().stream()
                 .filter(b -> "BORROWED".equals(b.getStatus()))
                 .filter(b -> b.getDueDate().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
+        overdue.forEach(this::resolveBorrowName);
+        return overdue;
+    }
+
+    private void resolveBorrowName(BorrowBook borrow) {
+        if (borrow.getStudentName() == null || borrow.getStudentName().equals("-") || borrow.getStudentName().trim().isEmpty()) {
+            studentRepo.findById(borrow.getStudentId()).ifPresent(s -> {
+                if (s.getName() != null && !s.getName().trim().isEmpty()) {
+                    borrow.setStudentName(s.getName());
+                } else if (s.getEmail() != null) {
+                    borrow.setStudentName(s.getEmail());
+                } else {
+                    borrow.setStudentName(borrow.getStudentId());
+                }
+            });
+        }
     }
 
     @DeleteMapping("/borrow/cleanup")

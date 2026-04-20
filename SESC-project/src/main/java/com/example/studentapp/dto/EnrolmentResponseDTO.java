@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class EnrolmentResponseDTO {
     private String enrolmentId;
     private String studentId;
+    private String studentName;
     private Course course;
     private LocalDateTime enrolledAt;
     private String status;
