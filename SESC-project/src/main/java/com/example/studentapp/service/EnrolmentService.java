@@ -67,6 +67,11 @@ public class EnrolmentService {
         Map<String, Course> courseMap = StreamSupport.stream(coursesSnapshot.spliterator(), false)
                 .collect(Collectors.toMap(Course::getId, c -> c));
 
+        // Resolve student name once to avoid redundant DB queries in the loop
+        String studentName = studentRepository.findById(studentId)
+                .map(s -> (s.getName() != null && !s.getName().trim().isEmpty()) ? s.getName() : s.getEmail())
+                .orElse("Unknown Student");
+
         for (Enrolment e : enrolments) {
             Course course = courseMap.get(e.getCourseId());
             // If course is missing, we still want to show the enrolment but with a placeholder
@@ -75,10 +80,6 @@ public class EnrolmentService {
                 course.setTitle("Unknown Course");
                 course.setDescription("Course details not found");
             }
-            
-            String studentName = studentRepository.findById(e.getStudentId())
-                    .map(s -> (s.getName() != null && !s.getName().trim().isEmpty()) ? s.getName() : s.getEmail())
-                    .orElse("Unknown Student");
 
             responses.add(new EnrolmentResponseDTO(
                     e.getId(),

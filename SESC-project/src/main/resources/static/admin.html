@@ -261,7 +261,7 @@
             </tr>`;
 
             const displayName = s.name || s.email || 'Unknown';
-            studentSelect.innerHTML += `<option value="${s.id}|${displayName}">${displayName}</option>`;
+            studentSelect.innerHTML += `<option value="${s.id}" data-name="${displayName}">${displayName}</option>`;
         });
     });
     }
@@ -392,14 +392,14 @@
     }
 
     function confirmIssue(){
-    const val = studentSelect.value.split("|");
+    const selectedOption = studentSelect.options[studentSelect.selectedIndex];
 
     fetch("/api/admin/borrow",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
-    studentId:val[0],
-    studentName:val[1],
+    studentId:selectedOption.value,
+    studentName:selectedOption.getAttribute("data-name"),
     bookId:selectedBookId,
     bookTitle:selectedBookTitle
     })
@@ -471,8 +471,8 @@
             body: JSON.stringify({
                 title: cTitle.value,
                 description: cDesc.value,
-                credits: parseInt(cCredits.value),
-                duration: parseInt(cDuration.value)
+                credits: parseInt(cCredits.value) || 0,
+                duration: parseInt(cDuration.value) || 0
             })
         }).then(() => {
             closeCourseModal();
@@ -525,8 +525,8 @@
             body: JSON.stringify({
                 title: ecTitle.value,
                 description: ecDesc.value,
-                credits: parseInt(ecCredits.value),
-                duration: parseInt(ecDuration.value)
+                credits: parseInt(ecCredits.value) || 0,
+                duration: parseInt(ecDuration.value) || 0
             })
         }).then(() => {
             closeCourseEdit();

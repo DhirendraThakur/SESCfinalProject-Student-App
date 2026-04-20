@@ -127,6 +127,7 @@
 
     if (!user) {
         window.location.href = "login.html";
+        return;
     }
 
     async function loadBooks() {
@@ -185,20 +186,38 @@
                     const borrowedAt = new Date(h.borrowedAt).toLocaleDateString('en-GB');
                     const dueDate = new Date(h.dueDate).toLocaleDateString('en-GB');
                     
-                    let returnHtml = "";
-                    if (h.status === "BORROWED") {
-                        returnHtml = `<button class="return-btn" onclick="returnBook('${h.id}')">Return</button>`;
-                    }
+                    const detailsDiv = document.createElement("div");
                     
-                    card.innerHTML = `
-                        <div>
-                            <h4>${h.bookTitle}</h4>
-                            <p><b>Borrowed:</b> ${borrowedAt}</p>
-                            <p><b>Due:</b> ${dueDate}</p>
-                            <p><span class="badge ${h.status}">${h.status}</span></p>
-                        </div>
-                        ${returnHtml}
-                    `;
+                    const titleEl = document.createElement("h4");
+                    titleEl.textContent = h.bookTitle || "Unknown Title";
+                    
+                    const borrowP = document.createElement("p");
+                    borrowP.innerHTML = `<b>Borrowed:</b> ${borrowedAt}`;
+                    
+                    const dueP = document.createElement("p");
+                    dueP.innerHTML = `<b>Due:</b> ${dueDate}`;
+                    
+                    const statusP = document.createElement("p");
+                    const statusBadge = document.createElement("span");
+                    const safeStatus = h.status === 'RETURNED' ? 'RETURNED' : 'BORROWED';
+                    statusBadge.className = `badge ${safeStatus}`;
+                    statusBadge.textContent = h.status;
+                    statusP.appendChild(statusBadge);
+                    
+                    detailsDiv.appendChild(titleEl);
+                    detailsDiv.appendChild(borrowP);
+                    detailsDiv.appendChild(dueP);
+                    detailsDiv.appendChild(statusP);
+                    card.appendChild(detailsDiv);
+
+                    if (h.status === "BORROWED") {
+                        const returnBtn = document.createElement("button");
+                        returnBtn.className = "return-btn";
+                        returnBtn.textContent = "Return";
+                        returnBtn.onclick = () => returnBook(h.id);
+                        card.appendChild(returnBtn);
+                    }
+
                     grid.appendChild(card);
                 });
             }

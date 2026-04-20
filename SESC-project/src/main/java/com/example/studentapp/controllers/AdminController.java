@@ -78,6 +78,9 @@ public class AdminController {
     public BorrowBook borrowBook(@RequestBody BorrowBook borrow) {
         // mark book unavailable
         Book book = bookRepo.findById(borrow.getBookId()).orElseThrow();
+        if (!book.isAvailable()) {
+            throw new RuntimeException("Book is not currently available");
+        }
         book.setAvailable(false);
         bookRepo.save(book);
 
@@ -110,7 +113,7 @@ public class AdminController {
     public List<BorrowBook> getOverdueLoans() {
         List<BorrowBook> overdue = borrowRepo.findAll().stream()
                 .filter(b -> "BORROWED".equals(b.getStatus()))
-                .filter(b -> b.getDueDate().isBefore(LocalDateTime.now()))
+                .filter(b -> b.getDueDate() != null && b.getDueDate().isBefore(LocalDateTime.now()))
                 .collect(Collectors.toList());
         overdue.forEach(this::resolveBorrowName);
         return overdue;
