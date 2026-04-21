@@ -111,7 +111,6 @@
 <div class="sidebar">
     <h2>Admin</h2>
     <button onclick="showSection('students')">Students</button>
-    <button onclick="showSection('library')">Library</button>
     <button onclick="showSection('courses')">Courses</button>
     <button onclick="showSection('enrolments')">Enrolments</button>
 </div>
@@ -126,19 +125,7 @@
         <table id="studentTable"></table>
     </div>
 
-    <!-- LIBRARY -->
-    <div id="library" class="card">
-        <h3>Library</h3>
-        <button class="btn btn-primary" onclick="openBookModal()">+ Add Book</button>
-        <table id="bookTable"></table>
 
-        <h4>Borrowed Books</h4>
-        <table id="borrowTable"></table>
-
-        <h4>Overdue Books</h4>
-        <button class="btn btn-danger" onclick="loadOverdue()">Load Overdue Books</button>
-        <table id="overdueTable"></table>
-    </div>
 
     <!-- COURSES -->
     <div id="courses" class="card">
@@ -155,27 +142,7 @@
 
 </div>
 
-<!-- ADD BOOK MODAL -->
-<div class="modal" id="bookModal">
-    <div class="modal-content">
-        <h3>Add Book</h3>
-        <input id="title" placeholder="Title">
-        <input id="author" placeholder="Author">
-        <button class="btn btn-primary" onclick="saveBook()">Save</button>
-        <button onclick="closeBookModal()">Close</button>
-    </div>
-</div>
 
-<!-- EDIT BOOK MODAL -->
-<div class="modal" id="bookEditModal">
-    <div class="modal-content">
-        <h3>Edit Book</h3>
-        <input id="bTitle" placeholder="Title">
-        <input id="bAuthor" placeholder="Author">
-        <button onclick="updateBook()">Update</button>
-        <button onclick="closeBookEdit()">Cancel</button>
-    </div>
-</div>
 
 <!-- EDIT STUDENT MODAL -->
 <div class="modal" id="studentEditModal">
@@ -190,15 +157,7 @@
     </div>
 </div>
 
-<!-- ISSUE BOOK MODAL -->
-<div class="modal" id="issueModal">
-    <div class="modal-content">
-        <h3>Issue Book</h3>
-        <select id="studentSelect"></select>
-        <button onclick="confirmIssue()">Issue</button>
-        <button onclick="closeIssue()">Cancel</button>
-    </div>
-</div>
+
 
 <!-- ADD COURSE MODAL -->
 <div class="modal" id="courseModal">
@@ -231,7 +190,6 @@
     // NAVIGATION
     function showSection(id){
         document.getElementById("students").style.display="none";
-        document.getElementById("library").style.display="none";
         document.getElementById("courses").style.display="none";
         document.getElementById("enrolments").style.display="none";
         document.getElementById(id).style.display="block";
@@ -301,162 +259,7 @@
     });
     }
 
-    // ================= BOOK =================
-    let bookEditId;
 
-    function openBookModal(){ bookModal.style.display="block"; }
-    function closeBookModal(){ bookModal.style.display="none"; }
-
-    function saveBook(){
-    fetch("/api/admin/books",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    title:title.value,
-    author:author.value
-    })
-    })
-    .then(()=>{
-    closeBookModal();
-    loadBooks();
-    });
-    }
-
-    function loadBooks(){
-    fetch("/api/admin/books")
-    .then(res=>res.json())
-    .then(data=>{
-        bookTable.innerHTML="";
-        data.forEach(b=>{
-            bookTable.innerHTML += `
-            <tr>
-            <td>${b.title}</td>
-            <td>${b.author}</td>
-            <td>
-            <span class="badge ${b.available?'available':'issued'}">
-            ${b.available?'Available':'Issued'}
-            </span>
-            </td>
-            <td>
-            <button class="btn btn-warning" onclick="editBook('${b.id}','${b.title}','${b.author}')">Edit</button>
-            <button class="btn btn-primary" onclick="openIssue('${b.id}','${b.title}')">Issue</button>
-            <button class="btn btn-danger" onclick="deleteBook('${b.id}')">Delete</button>
-            </td>
-            </tr>`;
-        });
-    });
-    }
-
-    function deleteBook(id){
-    fetch(`/api/admin/books/${id}`,{method:"DELETE"})
-    .then(()=>loadBooks());
-    }
-
-    function editBook(id,titleVal,authorVal){
-    bookEditId=id;
-    bTitle.value=titleVal;
-    bAuthor.value=authorVal;
-    bookEditModal.style.display="block";
-    }
-
-    function closeBookEdit(){
-    bookEditModal.style.display="none";
-    }
-
-    function updateBook(){
-    fetch(`/api/admin/books/${bookEditId}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    title:bTitle.value,
-    author:bAuthor.value
-    })
-    })
-    .then(()=>{
-    closeBookEdit();
-    loadBooks();
-    });
-    }
-
-    // ================= ISSUE =================
-    let selectedBookId, selectedBookTitle;
-
-    function openIssue(id,title){
-    selectedBookId=id;
-    selectedBookTitle=title;
-    issueModal.style.display="block";
-    }
-
-    function closeIssue(){
-    issueModal.style.display="none";
-    }
-
-    function confirmIssue(){
-    const selectedOption = studentSelect.options[studentSelect.selectedIndex];
-
-    fetch("/api/admin/borrow",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    studentId:selectedOption.value,
-    studentName:selectedOption.getAttribute("data-name"),
-    bookId:selectedBookId,
-    bookTitle:selectedBookTitle
-    })
-    })
-    .then(()=>{
-    closeIssue();
-    loadBooks();
-    loadBorrow();
-    });
-    }
-
-    // ================= BORROW =================
-    function loadBorrow(){
-    fetch("/api/admin/borrow")
-    .then(res=>res.json())
-    .then(data=>{
-        borrowTable.innerHTML="<tr><th>Student Name</th><th>Book Title</th><th>Borrowed Date</th><th>Due Date</th><th>Status</th></tr>";
-        data.forEach(b=>{
-            const borrowedDate = b.borrowedAt ? new Date(b.borrowedAt).toLocaleDateString('en-GB') : '-';
-            const dueDate = b.dueDate ? new Date(b.dueDate).toLocaleDateString('en-GB') : '-';
-            const status = b.status || 'UNKNOWN';
-            
-            borrowTable.innerHTML += `
-            <tr>
-            <td>${b.studentName || 'Unknown'}</td>
-            <td>${b.bookTitle || '-'}</td>
-            <td>${borrowedDate}</td>
-            <td>${dueDate}</td>
-            <td><span class="badge ${status}">${status}</span></td>
-            </tr>`;
-        });
-    });
-    }
-
-    function loadOverdue(){
-    fetch("/api/admin/borrow/overdue")
-    .then(res=>res.json())
-    .then(data=>{
-        overdueTable.innerHTML="<tr><th>Student</th><th>Book</th><th>Borrowed</th><th>Due</th><th>Days Overdue</th></tr>";
-        const today = new Date();
-        data.forEach(b=>{
-            const dueDate = new Date(b.dueDate);
-            const diffTime = today - dueDate;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const rowStyle = diffDays > 7 ? 'style="background:#ffcccc"' : '';
-
-            overdueTable.innerHTML += `
-            <tr ${rowStyle}>
-            <td>${b.studentName}</td>
-            <td>${b.bookTitle}</td>
-            <td>${new Date(b.borrowedAt).toLocaleDateString()}</td>
-            <td>${dueDate.toLocaleDateString()}</td>
-            <td>${diffDays}</td>
-            </tr>`;
-        });
-    });
-    }
 
     // ================= COURSES =================
     let courseEditId;
@@ -555,9 +358,7 @@
 
     // INIT
     loadStudents();
-    loadBooks();
-    loadBorrow();
-    loadOverdue();
+
     loadCourses();
     loadEnrolments();
 

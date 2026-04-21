@@ -4,9 +4,7 @@ import com.example.studentapp.entities.*;
 import com.example.studentapp.repositories.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -14,15 +12,9 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     private final Student_Repositories studentRepo;
-    private final BookRepository bookRepo;
-    private final BorrowRepository borrowRepo;
 
-    public AdminController(Student_Repositories studentRepo,
-                           BookRepository bookRepo,
-                           BorrowRepository borrowRepo) {
+    public AdminController(Student_Repositories studentRepo) {
         this.studentRepo = studentRepo;
-        this.bookRepo = bookRepo;
-        this.borrowRepo = borrowRepo;
     }
 
     // STUDENTS
@@ -47,97 +39,5 @@ public class AdminController {
         studentRepo.deleteById(id);
     }
 
-    // BOOKS
-    @PostMapping("/books")
-    public Book addBook(@RequestBody Book book) {
-        book.setAvailable(true);
-        return bookRepo.save(book);
-    }
 
-    @GetMapping("/books")
-    public List<Book> getBooks() {
-        return bookRepo.findAll();
-    }
-
-    @PutMapping("/books/{id}")
-    public Book updateBook(@PathVariable String id, @RequestBody Book updated) {
-        return bookRepo.findById(id).map(b -> {
-            b.setTitle(updated.getTitle());
-            b.setAuthor(updated.getAuthor());
-            return bookRepo.save(b);
-        }).orElseThrow();
-    }
-
-    @DeleteMapping("/books/{id}")
-    public void deleteBook(@PathVariable String id) {
-        bookRepo.deleteById(id);
-    }
-
-    // BORROW
-    @PostMapping("/borrow")
-    public BorrowBook borrowBook(@RequestBody BorrowBook borrow) {
-        // mark book unavailable
-        Book book = bookRepo.findById(borrow.getBookId()).orElseThrow();
-        if (!book.isAvailable()) {
-            throw new RuntimeException("Book is not currently available");
-        }
-        book.setAvailable(false);
-        bookRepo.save(book);
-
-        // Resolve student name for accuracy
-        studentRepo.findById(borrow.getStudentId()).ifPresent(s -> {
-            if (s.getName() != null && !s.getName().trim().isEmpty()) {
-                borrow.setStudentName(s.getName());
-            } else if (s.getEmail() != null) {
-                borrow.setStudentName(s.getEmail());
-            }
-        });
-
-        // set new fields
-        borrow.setBorrowedAt(LocalDateTime.now());
-        borrow.setDueDate(LocalDateTime.now().plusDays(14));
-        borrow.setReturnedAt(null);
-        borrow.setStatus("BORROWED");
-
-        return borrowRepo.save(borrow);
-    }
-
-    @GetMapping("/borrow")
-    public List<BorrowBook> getBorrowDetails() {
-        List<BorrowBook> loans = borrowRepo.findAll();
-        loans.forEach(this::resolveBorrowName);
-        return loans;
-    }
-
-    @GetMapping("/borrow/overdue")
-    public List<BorrowBook> getOverdueLoans() {
-        List<BorrowBook> overdue = borrowRepo.findAll().stream()
-                .filter(b -> "BORROWED".equals(b.getStatus()))
-                .filter(b -> b.getDueDate() != null && b.getDueDate().isBefore(LocalDateTime.now()))
-                .collect(Collectors.toList());
-        overdue.forEach(this::resolveBorrowName);
-        return overdue;
-    }
-
-    private void resolveBorrowName(BorrowBook borrow) {
-        if (borrow.getStudentName() == null || borrow.getStudentName().equals("-") || borrow.getStudentName().trim().isEmpty()) {
-            studentRepo.findById(borrow.getStudentId()).ifPresent(s -> {
-                if (s.getName() != null && !s.getName().trim().isEmpty()) {
-                    borrow.setStudentName(s.getName());
-                } else if (s.getEmail() != null) {
-                    borrow.setStudentName(s.getEmail());
-                } else {
-                    borrow.setStudentName(borrow.getStudentId());
-                }
-            });
-        }
-    }
-
-    @DeleteMapping("/borrow/cleanup")
-    public void cleanupDirtyRecords() {
-        List<BorrowBook> toDelete = borrowRepo.findAll().stream()
-                .filter(b -> b.getStudentName() == null || b.getStatus() == null || b.getBorrowedAt() == null)
-                .collect(Collectors.toList());
-        borrowRepo.deleteAll(toDelete);
-    }
 }

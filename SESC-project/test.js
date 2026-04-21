@@ -1,133 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Library Portal</title>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: #f4f6f9;
-        }
-
-        /* NAVBAR */
-        .navbar {
-            background: #4facfe;
-            padding: 15px 20px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .back-btn {
-            background: white;
-            color: #4facfe;
-            padding: 8px 15px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        /* LAYOUT */
-        .container {
-            padding: 30px;
-        }
-
-        .full-width-section {
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        .book-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 8px;
-            background: #fafafa;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .book-card h4 { margin: 0 0 10px 0; color: #4facfe; }
-        .book-card p { margin: 5px 0; font-size: 14px; }
-
-        .borrow-btn, .return-btn {
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-            font-size: 14px;
-        }
-
-        .borrow-btn { background: #4facfe; }
-        .return-btn { background: #dc3545; }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .badge.RETURNED { background: #28a745; }
-        .badge.BORROWED { background: #fd7e14; }
-
-    </style>
-</head>
-
-<body>
-
-<!-- NAVBAR -->
-<div class="navbar">
-    <h3>Library Portal</h3>
-    <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
-</div>
-
-<!-- CONTENT -->
-<div class="container">
-
-    <!-- SECTION C - My Borrowed Books -->
-    <div class="full-width-section">
-        <h3>My Borrowed Books</h3>
-        <div class="grid" id="historyGrid">
-            <p>Loading your history...</p>
-        </div>
-    </div>
-
-    <!-- SECTION B - Available Books -->
-    <div class="full-width-section">
-        <h3>Available Books</h3>
-        <div class="grid" id="booksGrid">
-            <p>Loading available books...</p>
-        </div>
-    </div>
-
-</div>
-
 <script>
     const user = JSON.parse(localStorage.getItem("user")) || JSON.parse(localStorage.getItem("student"));
 
     if (!user) {
         window.location.href = "login.html";
-        return;
     }
 
     async function loadBooks() {
@@ -273,10 +148,9 @@
         });
     }
 
-    loadBooks();
-    loadHistory();
+    if (user) {
+        loadBooks();
+        loadHistory();
+    }
 
 </script>
-
-</body>
-</html>
