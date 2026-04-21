@@ -195,6 +195,10 @@
 <div class="container">
 
     <div class="card">
+        <p><b>Student ID:</b> <span id="studentIdDisp" style="color: #4da6ff; font-weight: bold;"></span> 
+            <button onclick="copyId()" style="width: auto; padding: 2px 8px; font-size: 11px; margin-left: 5px; display: inline-block;">Copy</button>
+            <span id="copyFeedback" style="font-size: 11px; color: green; display: none; margin-left: 5px;">Copied!</span>
+        </p>
         <h3 id="name"></h3>
         <p id="email"></p>
         <p id="phone"></p>
@@ -284,10 +288,23 @@
     }
 
     // display user
-    name.innerText = user.name;
-    email.innerText = user.email;
-    phone.innerText = user.phone;
-    address.innerText = user.address;
+    if (user) {
+        studentIdDisp.innerText = user.id;
+        name.innerText = user.name;
+        email.innerText = user.email;
+        phone.innerText = user.phone;
+        address.innerText = user.address;
+    }
+
+    function copyId() {
+        navigator.clipboard.writeText(user.id).then(() => {
+            const feedback = document.getElementById("copyFeedback");
+            feedback.style.display = "inline";
+            setTimeout(() => {
+                feedback.style.display = "none";
+            }, 1500);
+        });
+    }
 
     // dropdown
     function toggleMenu() {
