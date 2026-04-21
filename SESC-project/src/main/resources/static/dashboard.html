@@ -208,6 +208,11 @@
         </div>
 
         <div class="service-card">
+            <h4>Library Service</h4>
+            <button onclick="library()">Open</button>
+        </div>
+
+        <div class="service-card">
             <h4>More Details</h4>
             <button onclick="details()">Open</button>
         </div>
@@ -345,7 +350,8 @@
     }
 
     // services
-    function finance() { alert("Finance coming soon"); }
+    function finance() { window.open("http://localhost:8082/index.html", "_blank"); }
+    function library() { window.open("http://localhost:8081/student.html", "_blank"); }
 
 
     // --- COURSES & ENROLMENTS LOGIC ---
