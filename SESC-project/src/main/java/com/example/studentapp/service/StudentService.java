@@ -20,6 +20,9 @@ public class StudentService {
     @Value("${library.service.url}")
     private String libraryServiceUrl;
 
+    @Value("${finance.service.url}")
+    private String financeServiceUrl;
+
     public StudentService(Student_Repositories repo, RestTemplate restTemplate) {
         this.repo = repo;
         this.restTemplate = restTemplate;
@@ -32,15 +35,30 @@ public class StudentService {
     public StudentEntities register(StudentEntities student) {
         StudentEntities saved = repo.save(student);
 
+        // Create Library account
         try {
-            String url = libraryServiceUrl + "/api/library/accounts/register";
-            Map<String, String> body = new HashMap<>();
-            body.put("studentId", saved.getId());
-            restTemplate.postForObject(url, body, String.class);
+            String libraryUrl = libraryServiceUrl + "/api/library/accounts/register";
+            Map<String, String> libraryBody = new HashMap<>();
+            libraryBody.put("studentId", saved.getId());
+            restTemplate.postForObject(libraryUrl, libraryBody, String.class);
             System.out.println("Library account created for student: "
                     + saved.getId());
         } catch (Exception e) {
             System.err.println("Warning: Could not create library " +
+                    "account for student " + saved.getId() +
+                    ": " + e.getMessage());
+        }
+
+        // Create Finance account
+        try {
+            String financeUrl = financeServiceUrl + "/accounts/";
+            Map<String, String> financeBody = new HashMap<>();
+            financeBody.put("studentId", saved.getId());
+            restTemplate.postForObject(financeUrl, financeBody, String.class);
+            System.out.println("Finance account created for student: "
+                    + saved.getId());
+        } catch (Exception e) {
+            System.err.println("Warning: Could not create finance " +
                     "account for student " + saved.getId() +
                     ": " + e.getMessage());
         }
