@@ -8,10 +8,14 @@ import com.example.studentapp.entities.StudentEntities;
 import com.example.studentapp.repositories.CourseRepository;
 import com.example.studentapp.repositories.EnrolmentRepository;
 import com.example.studentapp.repositories.Student_Repositories;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,13 +28,19 @@ public class EnrolmentService {
     private final EnrolmentRepository enrolmentRepository;
     private final CourseRepository courseRepository;
     private final Student_Repositories studentRepository;
+    private final RestTemplate restTemplate;
+
+    @Value("${finance.service.url}")
+    private String financeServiceUrl;
 
     public EnrolmentService(EnrolmentRepository enrolmentRepository, 
                             CourseRepository courseRepository,
-                            Student_Repositories studentRepository) {
+                            Student_Repositories studentRepository,
+                            RestTemplate restTemplate) {
         this.enrolmentRepository = enrolmentRepository;
         this.courseRepository = courseRepository;
         this.studentRepository = studentRepository;
+        this.restTemplate = restTemplate;
     }
 
     public Enrolment enrollStudent(EnrolmentRequestDTO request) {
@@ -50,7 +60,25 @@ public class EnrolmentService {
         enrolment.setCourseId(course.getId());
         enrolment.setEnrolledAt(LocalDateTime.now());
         enrolment.setStatus("ACTIVE");
-        return enrolmentRepository.save(enrolment);
+        Enrolment savedEnrolment = enrolmentRepository.save(enrolment);
+
+        // Create Finance invoice for course enrolment
+        try {
+            String financeUrl = financeServiceUrl + "/invoices/";
+            Map<String, Object> invoiceBody = new HashMap<>();
+            invoiceBody.put("studentId", savedEnrolment.getStudentId());
+            invoiceBody.put("amount", 500.00);
+            invoiceBody.put("type", "TUITION_FEES");
+            invoiceBody.put("dueDate", LocalDate.now().plusDays(30).toString());
+            restTemplate.postForObject(financeUrl, invoiceBody, String.class);
+            System.out.println("Finance invoice created for: "
+                    + savedEnrolment.getStudentId());
+        } catch (Exception e) {
+            System.err.println("Warning: Could not create invoice: "
+                    + e.getMessage());
+        }
+
+        return savedEnrolment;
     }
 
     public List<EnrolmentResponseDTO> getStudentEnrolments(String studentId) {
