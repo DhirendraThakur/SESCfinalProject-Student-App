@@ -8,7 +8,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin
+@CrossOrigin(origins = "*") // ✅ FIXED CORS
+
 public class AdminController {
 
     private final Student_Repositories studentRepo;
@@ -17,27 +18,30 @@ public class AdminController {
         this.studentRepo = studentRepo;
     }
 
-    // STUDENTS
+    // ================= STUDENTS =================
+
     @GetMapping("/students")
     public List<StudentEntities> getStudents() {
         return studentRepo.findAll();
     }
-    // UPDATE STUDENT
-    @PutMapping("/students/{id}")
-    public StudentEntities updateStudent(@PathVariable String id, @RequestBody StudentEntities updated) {
-        return studentRepo.findById(id).map(s -> {
-            s.setName(updated.getName());
-            s.setEmail(updated.getEmail());
-            s.setPhone(updated.getPhone());
-            s.setAddress(updated.getAddress());
-            return studentRepo.save(s);
-        }).orElseThrow();
+
+    @PutMapping("/students/{id}") // ✅ ADD UPDATE
+    public StudentEntities updateStudent(@PathVariable String id,
+                                         @RequestBody StudentEntities updated) {
+
+        StudentEntities student = studentRepo.findById(id).orElseThrow();
+
+        student.setName(updated.getName());
+        student.setEmail(updated.getEmail());
+        student.setPhone(updated.getPhone());
+        student.setAddress(updated.getAddress());
+
+        return studentRepo.save(student);
     }
 
     @DeleteMapping("/students/{id}")
     public void deleteStudent(@PathVariable String id) {
         studentRepo.deleteById(id);
     }
-
 
 }
