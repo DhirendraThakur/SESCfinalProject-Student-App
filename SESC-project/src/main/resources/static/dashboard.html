@@ -1,26 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        body {
-            font-family: Arial;
+        * {
             margin: 0;
-            background: #f4f6f9;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* NAVBAR */
+        :root {
+            --primary: #4facfe;
+            --secondary: #00c6ff;
+            --dark: #1f2937;
+            --text: #374151;
+            --muted: #6b7280;
+            --white: #ffffff;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --shadow: 0 10px 25px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #eef7ff 0%, #f4f7fb 100%);
+            color: var(--text);
+        }
+
         .navbar {
-            background: #4facfe;
-            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
+            padding: 16px 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 6px 18px rgba(79, 172, 254, 0.25);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand i {
+            font-size: 24px;
+        }
+
+        .brand-text h2 {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+
+        .brand-text p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-user-name {
+            font-size: 15px;
+            font-weight: bold;
         }
 
         .user-menu {
@@ -28,480 +82,788 @@
             cursor: pointer;
         }
 
+        .user-trigger {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: 0.3s;
+        }
+
+        .user-trigger:hover {
+            background: rgba(255,255,255,0.28);
+            transform: scale(1.05);
+        }
+
         .dropdown {
             position: absolute;
             right: 0;
-            top: 35px;
+            top: 58px;
             background: white;
-            width: 150px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 180px;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
             display: none;
+            overflow: hidden;
         }
 
         .dropdown a {
-            display: block;
-            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 15px;
             text-decoration: none;
-            color: black;
+            color: var(--text);
+            font-size: 14px;
+            transition: 0.2s;
         }
 
         .dropdown a:hover {
-            background: #f0f0f0;
+            background: #f3f7ff;
         }
 
-        /* LAYOUT */
-        .container {
+        .page {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 28px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow);
             display: flex;
             justify-content: space-between;
-            padding: 30px;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .hero-left h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .hero-left p {
+            font-size: 15px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .hero-badge {
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 18px;
+            padding: 18px 22px;
+            min-width: 220px;
+        }
+
+        .hero-badge h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .hero-badge p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
         }
 
         .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px;
         }
 
-        /* RIGHT SIDE */
-        .right-section {
+        .profile-card {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #4facfe, #6dd5fa);
+            color: white;
+            padding: 24px;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+
+        .profile-header-text h2 {
+            margin-bottom: 6px;
+            font-size: 24px;
+        }
+
+        .profile-header-text p {
+            opacity: 0.95;
+            font-size: 14px;
+        }
+
+        .profile-body {
+            padding: 22px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .info-box {
+            background: #f8fbff;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid #e6f1ff;
+        }
+
+        .info-box span {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .info-box strong {
+            font-size: 15px;
+            color: var(--dark);
+            word-break: break-word;
+        }
+
+        .services-card h3 {
+            margin-bottom: 18px;
+        }
+
+        .service-list {
+            display: grid;
+            gap: 14px;
         }
 
         .service-card {
-            background: white;
-            padding: 20px;
-            width: 250px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            background: #f8fbff;
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #e6f1ff;
+            transition: 0.3s;
         }
 
-        .service-card button {
-            margin-top: 10px;
-            padding: 8px;
-            background: #4facfe;
+        .service-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .service-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .service-title i {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .service-card p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .service-card button,
+        .modal-content button {
             border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            border-radius: 5px;
+            padding: 11px 16px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            width: 100%;
         }
 
-        /* MODAL BASE */
+        .service-card button:hover,
+        .modal-content button:hover,
+        .enrol-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            margin-bottom: 14px;
+        }
+
+        .full-width-section {
+            background: white;
+            padding: 22px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 16px;
+        }
+
+        .course-card {
+            border: 1px solid #e8eef7;
+            padding: 18px;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #ffffff 0%, #fafcff 100%);
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .course-card h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .course-card p {
+            margin: 7px 0;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .enrol-btn {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .enrol-btn[disabled] {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .status-chip {
+            display: inline-block;
+            background: #ecfdf3;
+            color: #15803d;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .message-box {
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .message-info {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        .message-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s ease;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         .modal-content {
             background: white;
-            padding: 20px;
-            width: 320px;
-            margin: 8% auto;
-            border-radius: 10px;
+            padding: 24px;
+            width: 100%;
+            max-width: 520px;
+            margin: 70px auto;
+            border-radius: 18px;
             position: relative;
-            animation: slideDown 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 18px;
+            color: var(--dark);
+            font-size: 18px;
         }
 
         .close-btn {
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 22px;
+            top: 12px;
+            right: 16px;
+            font-size: 24px;
             cursor: pointer;
-            color: red;
+            color: var(--danger);
         }
 
         label {
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 12px;
             display: block;
+            font-size: 14px;
+            color: var(--dark);
         }
 
         input {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        /* COURSES & ENROLMENTS */
-        .full-width-section {
-            margin-top: 30px;
-            background: white;
-            padding: 20px;
+            padding: 11px 12px;
+            margin-top: 6px;
+            border: 1px solid #d6deea;
             border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
-        }
-        .course-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 8px;
-            background: #fafafa;
-        }
-        .course-card h4 { margin: 0 0 10px 0; color: #4facfe; }
-        .course-card p { margin: 5px 0; font-size: 14px; }
-        .enrol-btn { background: #28a745; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        .enrol-btn[disabled] { background: #ccc; cursor: not-allowed; }
-
-        /* ANIMATION */
-        @keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity: 1;}
+            outline: none;
+            font-size: 14px;
         }
 
-        @keyframes slideDown {
-            from {transform: translateY(-50px); opacity:0;}
-            to {transform: translateY(0); opacity:1;}
+        .profile-modal-data p {
+            background: #f1f5f9;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+
+        .empty-state {
+            color: var(--muted);
+            font-size: 14px;
+            padding: 12px 2px;
+        }
+
+        @media (max-width: 992px) {
+            .top-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page {
+                padding: 18px;
+            }
+
+            .profile-body {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-user-name {
+                display: none;
+            }
+
+            .hero-left h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
-    <h3>Student Dashboard</h3>
+    <div class="brand">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <div class="brand-text">
+            <h2>Student Dashboard</h2>
+            <p>Academic portal</p>
+        </div>
+    </div>
 
-    <div class="user-menu" onclick="toggleMenu()">
-        <i class="fa-solid fa-user-circle"></i>
+    <div class="nav-right">
+        <div class="nav-user-name" id="navUserName"></div>
 
-        <div class="dropdown" id="dropdown">
-            <a href="#" onclick="updateUser()">Update</a>
-            <a href="#" onclick="deleteUser()">Delete</a>
-            <a href="#" onclick="logout()">Logout</a>
+        <div class="user-menu">
+            <div class="user-trigger" onclick="toggleMenu()">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="dropdown" id="dropdown">
+                <a href="#" onclick="updateUser(); return false;"><i class="fa-solid fa-pen"></i> Update</a>
+                <a href="#" onclick="details(); return false;"><i class="fa-solid fa-id-card"></i> Profile</a>
+                <a href="#" onclick="deleteUser(); return false;"><i class="fa-solid fa-trash"></i> Delete</a>
+                <a href="#" onclick="logout(); return false;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- CONTENT -->
-<div class="container">
-
-    <div class="card">
-        <h3 id="name"></h3>
-        <p id="email"></p>
-        <p id="phone"></p>
-        <p id="address"></p>
-    </div>
-
-    <div class="right-section">
-        <div class="service-card">
-            <h4>Finance Service</h4>
-            <button onclick="finance()">Open</button>
+<div class="page">
+    <div class="hero">
+        <div class="hero-left">
+            <h1 id="welcomeTitle"></h1>
+            <p>
+                Manage your profile, enrol in courses, and keep track of your academic journey
+                from one clean and simple dashboard.
+            </p>
         </div>
 
-        <div class="service-card">
-            <h4>Library Service</h4>
-            <button onclick="library()">Open</button>
-        </div>
-
-        <div class="service-card">
-            <h4>More Details</h4>
-            <button onclick="details()">Open</button>
+        <div class="hero-badge">
+            <h3><i class="fa-solid fa-user-check"></i> Logged in as</h3>
+            <p id="heroUserName"></p>
         </div>
     </div>
 
+    <div class="top-grid">
+        <div class="card profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="profile-header-text">
+                    <h2 id="name"></h2>
+                    <p id="email"></p>
+                </div>
+            </div>
+
+            <div class="profile-body">
+                <div class="info-box">
+                    <span>Phone</span>
+                    <strong id="phone"></strong>
+                </div>
+
+                <div class="info-box">
+                    <span>Address</span>
+                    <strong id="address"></strong>
+                </div>
+
+                <div class="info-box">
+                    <span>Student ID</span>
+                    <strong id="studentId"></strong>
+                </div>
+
+                <div class="info-box">
+                    <span>Course</span>
+                    <strong id="course"></strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card services-card">
+            <h3>Quick Services</h3>
+
+            <div class="service-list">
+                <div class="service-card">
+                    <div class="service-title">
+                        <i class="fa-solid fa-wallet"></i>
+                        <h4>Finance Service</h4>
+                    </div>
+                    <p>View fee details, payments, and finance-related services.</p>
+                    <button onclick="finance()">Open</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-title">
+                        <i class="fa-solid fa-book"></i>
+                        <h4>Library Service</h4>
+                    </div>
+                    <p>Explore books, borrowed items, and digital library access.</p>
+                    <button onclick="library()">Open</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-title">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <h4>More Details</h4>
+                    </div>
+                    <p>Open your complete profile information and manage your account.</p>
+                    <button onclick="details()">Open</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="full-width-section">
+            <div class="section-header">
+                <h3><i class="fa-solid fa-book-open-reader"></i> My Enrolments</h3>
+            </div>
+            <div class="grid" id="enrolmentsGrid">
+                <p class="empty-state">Loading your enrolments...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="full-width-section">
+            <div class="section-header">
+                <h3><i class="fa-solid fa-layer-group"></i> Available Courses</h3>
+            </div>
+            <div class="grid" id="coursesGrid">
+                <p class="empty-state">Loading courses...</p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- NEW SECTIONS FOR COURSES AND ENROLMENTS -->
-<div style="padding: 0 30px 30px;">
-    <div class="full-width-section">
-        <h3>My Enrolments</h3>
-        <div class="grid" id="enrolmentsGrid">
-            <p>Loading your enrolments...</p>
-        </div>
-    </div>
-
-    <div class="full-width-section">
-        <h3>Available Courses</h3>
-        <div class="grid" id="coursesGrid">
-            <p>Loading courses...</p>
-        </div>
-    </div>
-</div>
-
-<!-- UPDATE MODAL -->
 <div class="modal" id="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
 
         <h3>Update Profile</h3>
 
-        <label>Name</label>
-        <input id="newName">
+        <label for="newName">Name</label>
+        <input id="newName" type="text" placeholder="Enter name">
 
-        <label>Email</label>
-        <input id="newEmail">
+        <label for="newEmail">Email</label>
+        <input id="newEmail" type="email" placeholder="Enter email">
 
-        <label>Phone</label>
-        <input id="newPhone">
+        <label for="newPhone">Phone</label>
+        <input id="newPhone" type="text" placeholder="Enter phone">
 
-        <label>Address</label>
-        <input id="newAddress">
+        <label for="newAddress">Address</label>
+        <input id="newAddress" type="text" placeholder="Enter address">
 
-        <button onclick="saveUpdate()">Save</button>
+        <label for="newCourse">Course</label>
+        <input id="newCourse" type="text" placeholder="Enter course">
+
+        <button onclick="saveUpdate()">Save Changes</button>
     </div>
 </div>
 
-<!-- PROFILE MODAL -->
 <div class="modal" id="profileModal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeProfile()">&times;</span>
 
         <h3>My Profile</h3>
 
-        <p><b>Name:</b> <span id="pName"></span></p>
-        <p><b>Email:</b> <span id="pEmail"></span></p>
-        <p><b>Phone:</b> <span id="pPhone"></span></p>
-        <p><b>Address:</b> <span id="pAddress"></span></p>
+        <div class="profile-modal-data">
+            <p><b>Name:</b> <span id="pName"></span></p>
+            <p><b>Email:</b> <span id="pEmail"></span></p>
+            <p><b>Phone:</b> <span id="pPhone"></span></p>
+            <p><b>Address:</b> <span id="pAddress"></span></p>
+            <p><b>Student ID:</b> <span id="pStudentId"></span></p>
+            <p><b>Course:</b> <span id="pCourse"></span></p>
+        </div>
 
         <button onclick="openEdit()">Edit Profile</button>
     </div>
 </div>
 
 <script>
-    const user = JSON.parse(localStorage.getItem("user"));
+    const API_BASE = "http://localhost:8080";
+    let user = JSON.parse(localStorage.getItem("user"));
 
     if (!user) {
         window.location.href = "login.html";
     }
 
-    // display user
-    name.innerText = user.name;
-    email.innerText = user.email;
-    phone.innerText = user.phone;
-    address.innerText = user.address;
+    const dropdown = document.getElementById("dropdown");
+    const modal = document.getElementById("modal");
+    const profileModal = document.getElementById("profileModal");
 
-    // dropdown
+    const nameEl = document.getElementById("name");
+    const emailEl = document.getElementById("email");
+    const phoneEl = document.getElementById("phone");
+    const addressEl = document.getElementById("address");
+    const studentIdEl = document.getElementById("studentId");
+    const courseEl = document.getElementById("course");
+    const navUserNameEl = document.getElementById("navUserName");
+    const heroUserNameEl = document.getElementById("heroUserName");
+    const welcomeTitleEl = document.getElementById("welcomeTitle");
+
+    const newName = document.getElementById("newName");
+    const newEmail = document.getElementById("newEmail");
+    const newPhone = document.getElementById("newPhone");
+    const newAddress = document.getElementById("newAddress");
+    const newCourse = document.getElementById("newCourse");
+
+    let myEnrolledCourseIds = [];
+
+    function safeValue(value, fallback = "Not provided") {
+        return value && String(value).trim() !== "" ? value : fallback;
+    }
+
+    function getDisplayName() {
+        return user && user.name && user.name.trim() !== "" ? user.name : "Student";
+    }
+
+    function normalizeUser(data) {
+        return {
+            id: data.id || "",
+            name: data.name || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            address: data.address || "",
+            course: data.course || "",
+            role: data.role || "STUDENT"
+        };
+    }
+
+    function renderUserInfo() {
+        const displayName = getDisplayName();
+
+        nameEl.innerText = displayName;
+        emailEl.innerText = safeValue(user.email);
+        phoneEl.innerText = safeValue(user.phone);
+        addressEl.innerText = safeValue(user.address);
+        studentIdEl.innerText = safeValue(user.id, "-");
+        courseEl.innerText = safeValue(user.course);
+
+        navUserNameEl.innerText = displayName;
+        heroUserNameEl.innerText = displayName;
+        welcomeTitleEl.innerText = `Welcome, ${displayName} 👋`;
+
+        document.getElementById("pName").innerText = displayName;
+        document.getElementById("pEmail").innerText = safeValue(user.email);
+        document.getElementById("pPhone").innerText = safeValue(user.phone);
+        document.getElementById("pAddress").innerText = safeValue(user.address);
+        document.getElementById("pStudentId").innerText = safeValue(user.id, "-");
+        document.getElementById("pCourse").innerText = safeValue(user.course);
+    }
+
+    function showMessage(gridId, message, type = "info") {
+        const grid = document.getElementById(gridId);
+        const className = type === "error" ? "message-error" : "message-info";
+        grid.innerHTML = `<div class="message-box ${className}">${message}</div>`;
+    }
+
+    renderUserInfo();
+
     function toggleMenu() {
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     }
 
-    // logout
     function logout() {
-        localStorage.clear();
+        localStorage.removeItem("user");
         window.location.href = "login.html";
     }
 
-    // open update
     function updateUser() {
+        dropdown.style.display = "none";
         modal.style.display = "block";
 
-        newName.value = user.name;
-        newEmail.value = user.email;
-        newPhone.value = user.phone;
-        newAddress.value = user.address;
+        newName.value = user.name || "";
+        newEmail.value = user.email || "";
+        newPhone.value = user.phone || "";
+        newAddress.value = user.address || "";
+        newCourse.value = user.course || "";
     }
 
-    // close update
     function closeModal() {
         modal.style.display = "none";
     }
 
-    // save update
     function saveUpdate() {
+        if (!user.id) {
+            alert("User ID is missing. Cannot update profile.");
+            return;
+        }
+
         const updated = {
-            name: newName.value,
-            email: newEmail.value,
-            phone: newPhone.value,
-            address: newAddress.value
+            name: newName.value.trim(),
+            email: newEmail.value.trim(),
+            phone: newPhone.value.trim(),
+            address: newAddress.value.trim(),
+            course: newCourse.value.trim(),
+            password: user.password || "",
+            role: user.role || "STUDENT"
         };
 
-        fetch(`/api/students/${user.id}`, {
+        if (!updated.name || !updated.email) {
+            alert("Name and email are required.");
+            return;
+        }
+
+        fetch(`${API_BASE}/api/students/${user.id}`, {
             method: "PUT",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updated)
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to update profile");
+            return res.json();
+        })
         .then(data => {
-            localStorage.setItem("user", JSON.stringify(data));
-            alert("Updated!");
-            location.reload();
+            user = normalizeUser(data);
+            localStorage.setItem("user", JSON.stringify(user));
+            renderUserInfo();
+            closeModal();
+            alert("Profile updated successfully!");
+        })
+        .catch(err => {
+            console.error("Update error:", err);
+            alert("Failed to update profile.");
         });
     }
 
-    // delete
     function deleteUser() {
+        dropdown.style.display = "none";
+
+        if (!user.id) {
+            alert("User ID is missing. Cannot delete account.");
+            return;
+        }
+
         if (confirm("Delete account?")) {
-            fetch(`/api/students/${user.id}`, {
+            fetch(`${API_BASE}/api/students/${user.id}`, {
                 method: "DELETE"
-            }).then(() => {
-                localStorage.clear();
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to delete user");
+                localStorage.removeItem("user");
                 window.location.href = "register.html";
+            })
+            .catch(err => {
+                console.error("Delete error:", err);
+                alert("Failed to delete account.");
             });
         }
     }
 
-    // services
-    function finance() { alert("Finance coming soon"); }
-    function library() { alert("Library coming soon"); }
-
-    // --- COURSES & ENROLMENTS LOGIC ---
-    let myEnrolledCourseIds = [];
-
-    async function loadEnrolments() {
-        try {
-            const res = await fetch(`/api/enrolments/${user.id}`);
-            const grid = document.getElementById('enrolmentsGrid');
-            
-            if (!res.ok) {
-                grid.innerHTML = "<p>Error loading enrolments.</p>";
-                return;
-            }
-            const enrolments = await res.json();
-            
-            myEnrolledCourseIds = enrolments.map(e => e.course.id);
-            
-            if (enrolments.length === 0) {
-                grid.innerHTML = "<p>You are not enrolled in any courses yet.</p>";
-            } else {
-                grid.innerHTML = "";
-                enrolments.forEach(e => {
-                    const card = document.createElement('div');
-                    card.className = 'course-card';
-                    const title = document.createElement('h4');
-                    title.textContent = e.course.title;
-                    const description = document.createElement('p');
-                    description.textContent = e.course.description;
-                    const creditsDuration = document.createElement('p');
-                    const creditsLabel = document.createElement('b');
-                    creditsLabel.textContent = 'Credits:';
-                    creditsDuration.appendChild(creditsLabel);
-                    creditsDuration.appendChild(document.createTextNode(` ${e.course.credits} | `));
-                    const durationLabel = document.createElement('b');
-                    durationLabel.textContent = 'Duration:';
-                    creditsDuration.appendChild(durationLabel);
-                    creditsDuration.appendChild(document.createTextNode(` ${e.course.duration} weeks`));
-                    const status = document.createElement('p');
-                    const statusLabel = document.createElement('b');
-                    statusLabel.textContent = 'Status:';
-                    status.appendChild(statusLabel);
-                    status.appendChild(document.createTextNode(` ${e.status}`));
-                    const enrolled = document.createElement('p');
-                    const enrolledLabel = document.createElement('b');
-                    enrolledLabel.textContent = 'Enrolled:';
-                    enrolled.appendChild(enrolledLabel);
-                    enrolled.appendChild(document.createTextNode(` ${new Date(e.enrolledAt).toLocaleDateString()}`));
-                    card.appendChild(title);
-                    card.appendChild(description);
-                    card.appendChild(creditsDuration);
-                    card.appendChild(status);
-                    card.appendChild(enrolled);
-                    grid.appendChild(card);
-                });
-            }
-        } catch (err) {
-            console.error("Error loading enrolments", err);
-        } finally {
-            loadCourses(); // Load courses even if enrolments fail
-        }
+    function finance() {
+        alert("Finance coming soon");
     }
 
-    async function loadCourses() {
-        try {
-            const res = await fetch(`/api/courses`);
-            const grid = document.getElementById('coursesGrid');
-            
-            if (!res.ok) {
-                grid.innerHTML = "<p>Error loading courses.</p>";
-                return;
-            }
-            const courses = await res.json();
-            
-            if (courses.length === 0) {
-                grid.innerHTML = "<p>No courses available.</p>";
-            } else {
-                grid.innerHTML = "";
-                courses.forEach(c => {
-                    const isEnrolled = myEnrolledCourseIds.includes(c.id);
-                    const card = document.createElement('div');
-                    card.className = 'course-card';
-                    const title = document.createElement('h4');
-                    title.textContent = c.title;
-                    const description = document.createElement('p');
-                    description.textContent = c.description;
-                    const creditsDuration = document.createElement('p');
-                    const creditsLabel = document.createElement('b');
-                    creditsLabel.textContent = 'Credits:';
-                    creditsDuration.appendChild(creditsLabel);
-                    creditsDuration.appendChild(document.createTextNode(` ${c.credits} | `));
-                    const durationLabel = document.createElement('b');
-                    durationLabel.textContent = 'Duration:';
-                    creditsDuration.appendChild(durationLabel);
-                    creditsDuration.appendChild(document.createTextNode(` ${c.duration} weeks`));
-                    
-                    const btn = document.createElement('button');
-                    btn.className = 'enrol-btn';
-                    btn.textContent = isEnrolled ? 'Enrolled' : 'Enrol Now';
-                    if (isEnrolled) {
-                        btn.disabled = true;
-                    } else {
-                        btn.onclick = () => enrol(c.id);
-                    }
-
-                    card.appendChild(title);
-                    card.appendChild(description);
-                    card.appendChild(creditsDuration);
-                    card.appendChild(btn);
-                    grid.appendChild(card);
-                });
-            }
-        } catch (err) {
-            console.error("Error loading courses", err);
-        }
+    function library() {
+        alert("Library coming soon");
     }
 
-    async function enrol(courseId) {
-        try {
-            const payload = { studentId: user.id, courseId: courseId };
-            const res = await fetch(`/api/enrolments`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(payload)
-            });
-            
-            if (res.ok) {
-                alert("Successfully enrolled!");
-                loadEnrolments(); // Refresh lists
-            } else {
-                alert("Failed to enrol.");
-            }
-        } catch (err) {
-            console.error("Error enrolling", err);
-        }
-    }
-
-    // Load data on start
-    if (user) {
-        loadEnrolments();
-    }
-    // ----------------------------------
-
-    // PROFILE MODAL
     function details() {
+        dropdown.style.display = "none";
+        renderUserInfo();
         profileModal.style.display = "block";
-
-        pName.innerText = user.name;
-        pEmail.innerText = user.email;
-        pPhone.innerText = user.phone;
-        pAddress.innerText = user.address;
     }
 
     function closeProfile() {
@@ -513,15 +875,158 @@
         updateUser();
     }
 
-    // outside click
+    async function loadEnrolments() {
+        const gridId = "enrolmentsGrid";
+
+        if (!user || !user.id) {
+            showMessage(gridId, "User ID is missing. Please log in again.", "error");
+            showMessage("coursesGrid", "Cannot load courses until user data is valid.", "error");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/api/enrolments/${user.id}`);
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                showMessage(gridId, `Error loading enrolments. ${errorText || ""}`, "error");
+                myEnrolledCourseIds = [];
+                await loadCourses();
+                return;
+            }
+
+            const enrolments = await res.json();
+
+            myEnrolledCourseIds = Array.isArray(enrolments)
+                ? enrolments.map(e => e.course?.id).filter(id => id !== undefined && id !== null)
+                : [];
+
+            const grid = document.getElementById(gridId);
+
+            if (!Array.isArray(enrolments) || enrolments.length === 0) {
+                showMessage(gridId, "You are not enrolled in any courses yet.", "info");
+            } else {
+                grid.innerHTML = "";
+
+                enrolments.forEach(e => {
+                    const course = e.course || {};
+
+                    const card = document.createElement("div");
+                    card.className = "course-card";
+
+                    card.innerHTML = `
+                        <h4>${safeValue(course.title, "Untitled Course")}</h4>
+                        <p>${safeValue(course.description, "No description available.")}</p>
+                        <p><b>Credits:</b> ${safeValue(course.credits, "-")} | <b>Duration:</b> ${safeValue(course.duration, "-")} weeks</p>
+                        <p><b>Enrolled:</b> ${e.enrolledAt ? new Date(e.enrolledAt).toLocaleDateString() : "-"}</p>
+                        <div class="status-chip">${safeValue(e.status, "ACTIVE")}</div>
+                    `;
+
+                    grid.appendChild(card);
+                });
+            }
+        } catch (err) {
+            console.error("Error loading enrolments:", err);
+            showMessage(gridId, "Could not connect to the enrolments API.", "error");
+            myEnrolledCourseIds = [];
+        } finally {
+            await loadCourses();
+        }
+    }
+
+    async function loadCourses() {
+        const gridId = "coursesGrid";
+
+        try {
+            const res = await fetch(`${API_BASE}/api/courses`);
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                showMessage(gridId, `Error loading courses. ${errorText || ""}`, "error");
+                return;
+            }
+
+            const courses = await res.json();
+            const grid = document.getElementById(gridId);
+
+            if (!Array.isArray(courses) || courses.length === 0) {
+                showMessage(gridId, "No courses available.", "info");
+            } else {
+                grid.innerHTML = "";
+
+                courses.forEach(c => {
+                    const isEnrolled = myEnrolledCourseIds.includes(c.id);
+
+                    const card = document.createElement("div");
+                    card.className = "course-card";
+
+                    card.innerHTML = `
+                        <h4>${safeValue(c.title, "Untitled Course")}</h4>
+                        <p>${safeValue(c.description, "No description available.")}</p>
+                        <p><b>Credits:</b> ${safeValue(c.credits, "-")} | <b>Duration:</b> ${safeValue(c.duration, "-")} weeks</p>
+                    `;
+
+                    const btn = document.createElement("button");
+                    btn.className = "enrol-btn";
+                    btn.textContent = isEnrolled ? "Enrolled" : "Enrol Now";
+
+                    if (isEnrolled) {
+                        btn.disabled = true;
+                    } else {
+                        btn.onclick = () => enrol(c.id);
+                    }
+
+                    card.appendChild(btn);
+                    grid.appendChild(card);
+                });
+            }
+        } catch (err) {
+            console.error("Error loading courses:", err);
+            showMessage(gridId, "Could not connect to the courses API.", "error");
+        }
+    }
+
+    async function enrol(courseId) {
+        if (!user.id) {
+            alert("User ID is missing. Cannot enrol.");
+            return;
+        }
+
+        try {
+            const payload = {
+                studentId: user.id,
+                courseId: courseId
+            };
+
+            const res = await fetch(`${API_BASE}/api/enrolments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("Successfully enrolled!");
+                loadEnrolments();
+            } else {
+                const errorText = await res.text();
+                alert("Failed to enrol. " + errorText);
+            }
+        } catch (err) {
+            console.error("Error enrolling:", err);
+            alert("Could not connect to enrolment API.");
+        }
+    }
+
     window.onclick = function(e) {
-        if (!e.target.closest('.user-menu')) {
+        if (!e.target.closest(".user-menu")) {
             dropdown.style.display = "none";
         }
 
         if (e.target === modal) closeModal();
         if (e.target === profileModal) closeProfile();
-    }
+    };
+
+    loadEnrolments();
 </script>
 
 </body>

@@ -1,113 +1,396 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Student Portal</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
-            font-family: Arial;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 0;
+            font-family: Arial, sans-serif;
         }
 
-        /* BACK BUTTON */
+        :root {
+            --primary: #4facfe;
+            --secondary: #00c6ff;
+            --accent: #43e97b;
+            --dark: #1f2937;
+            --text: #374151;
+            --muted: #6b7280;
+            --white: #ffffff;
+            --border: #dbe4f0;
+            --shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(67, 233, 123, 0.20), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(79, 172, 254, 0.22), transparent 30%),
+                linear-gradient(135deg, #edf7ff, #f7fffb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 1080px;
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+        }
+
+        .left-panel {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 56px 46px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .brand-text h2 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .brand-text p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            line-height: 1.15;
+            margin-bottom: 18px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            line-height: 1.7;
+            opacity: 0.96;
+            max-width: 470px;
+        }
+
+        .benefits {
+            margin-top: 34px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .benefit {
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 18px;
+            padding: 16px 18px;
+        }
+
+        .benefit h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .benefit p {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .left-footer {
+            margin-top: 24px;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .right-panel {
+            padding: 42px 38px;
+            background: rgba(255,255,255,0.94);
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
         .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 8px 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             border: none;
-            border-radius: 20px;
-            background: white;
-            color: #667eea;
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 10px 16px;
+            border-radius: 999px;
             cursor: pointer;
+            font-weight: bold;
+            transition: 0.25s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-1px);
+            background: #e0f0ff;
+        }
+
+        .register-link-top {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .register-link-top a {
+            color: #2563eb;
+            text-decoration: none;
             font-weight: bold;
         }
 
-        /* CARD */
-        .card {
-            background: rgba(255,255,255,0.1);
-            padding: 35px;
-            border-radius: 15px;
-            backdrop-filter: blur(12px);
-            color: white;
-            width: 320px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        .form-header h2 {
+            color: var(--dark);
+            font-size: 32px;
+            margin-bottom: 10px;
         }
 
-        /* INPUT */
-        .input-group {
-            text-align: left;
-            margin-top: 15px;
+        .form-header p {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
         }
 
         label {
             font-size: 14px;
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 15px;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: none;
-            border-radius: 6px;
+            padding: 14px 14px 14px 44px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            font-size: 14px;
+            color: var(--text);
+            background: #fbfdff;
+            transition: 0.2s;
+            outline: none;
         }
 
-        /* BUTTON */
-        .login-btn {
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.14);
+            background: white;
+        }
+
+        .submit-btn {
             width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            background: #4facfe;
-            color: white;
+            margin-top: 22px;
+            padding: 15px;
             border: none;
-            border-radius: 6px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            font-size: 15px;
-            transition: 0.3s;
+            transition: 0.25s;
+            box-shadow: 0 10px 24px rgba(79, 172, 254, 0.24);
         }
 
-        .login-btn:hover {
-            background: #3a8dde;
+        .submit-btn:hover {
+            transform: translateY(-1px);
         }
 
-        /* FOOTER */
+        .error {
+            margin-top: 14px;
+            color: #dc2626;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
         .footer {
-            margin-top: 15px;
-            font-size: 13px;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel {
+                padding: 36px 28px;
+            }
+
+            .hero h1 {
+                font-size: 34px;
+            }
+
+            .right-panel {
+                padding: 32px 24px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .top-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .form-header h2 {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
-
 <body>
 
-<!-- BACK BUTTON -->
-<button class="back-btn" onclick="goBack()">← Back</button>
+<div class="wrapper">
+    <div class="left-panel">
+        <div>
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="brand-text">
+                    <h2>Student Portal</h2>
+                    <p>Academic management made simple</p>
+                </div>
+            </div>
 
-<div class="card">
-    <h2>Welcome Student 🎓</h2>
-    <p>Login to continue</p>
+            <div class="hero">
+                <h1>Welcome back to your student portal</h1>
+                <p>
+                    Sign in to access your dashboard, manage your profile, explore services,
+                    and stay connected with your academic journey.
+                </p>
+            </div>
 
-    <div class="input-group">
-        <label>Email</label>
-        <input id="email" type="email" placeholder="Enter your email">
+            <div class="benefits">
+                <div class="benefit">
+                    <h4>Secure access</h4>
+                    <p>Quick and reliable login to your personalized academic dashboard.</p>
+                </div>
+
+                <div class="benefit">
+                    <h4>Modern student workspace</h4>
+                    <p>Manage profile details, enrolments, and student services in one place.</p>
+                </div>
+
+                <div class="benefit">
+                    <h4>Fast and responsive</h4>
+                    <p>Clean, responsive design for a smooth experience across devices.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="left-footer">
+            Built for a smoother and more professional student experience.
+        </div>
     </div>
 
-    <div class="input-group">
-        <label>Password</label>
-        <input id="password" type="password" placeholder="Enter your password">
-    </div>
+    <div class="right-panel">
+        <div class="top-actions">
+            <button class="back-btn" onclick="goBack()">← Back</button>
+            <div class="register-link-top">
+                Don’t have an account? <a href="register.html">Register</a>
+            </div>
+        </div>
 
-    <button class="login-btn" onclick="login()">Login</button>
+        <div class="form-header">
+            <h2>Login</h2>
+            <p>Enter your email and password to continue.</p>
+        </div>
 
-    <div class="footer">
-        Don't have an account? <a href="register.html" style="color:#fff;">Register</a>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-box">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input id="email" type="email" placeholder="Enter your email">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input id="password" type="password" placeholder="Enter your password">
+                </div>
+            </div>
+        </div>
+
+        <button class="submit-btn" onclick="login()">Login</button>
+
+        <div class="error" id="errorMsg"></div>
+
+        <div class="footer">
+            New here? <a href="register.html">Create your account</a>
+        </div>
     </div>
 </div>
 
@@ -116,28 +399,64 @@
         window.location.href = "index.html";
     }
 
-    function login() {
-        fetch("http://localhost:8080/api/students/login", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                email: email.value,
-                password: password.value
-            })
-        })
-        .then(res => {
-            if (!res.ok) throw new Error();
-            return res.json();
-        })
-        .then(data => {
-            localStorage.setItem("user", JSON.stringify(data));
-            if (data.role === "ADMIN") {
+    async function login() {
+        const emailValue = document.getElementById("email").value.trim();
+        const passwordValue = document.getElementById("password").value.trim();
+        const errorMsg = document.getElementById("errorMsg");
+
+        errorMsg.innerText = "";
+
+        if (!emailValue || !passwordValue) {
+            errorMsg.innerText = "Please enter email and password.";
+            return;
+        }
+
+        try {
+            const res = await fetch("http://localhost:8080/api/students/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: emailValue,
+                    password: passwordValue
+                })
+            });
+
+            if (!res.ok) {
+                throw new Error("Login failed");
+            }
+
+            const data = await res.json();
+            console.log("Login response from backend:", data);
+
+            const user = {
+                id: data.id || "",
+                name: data.name || "",
+                email: data.email || "",
+                phone: data.phone || "",
+                address: data.address || "",
+                course: data.course || "",
+                role: data.role || "STUDENT"
+            };
+
+            if (!user.name) {
+                errorMsg.innerText = "Login succeeded, but user name is missing from backend response.";
+                console.log("Saved user object problem:", user);
+                return;
+            }
+
+            localStorage.setItem("user", JSON.stringify(user));
+            console.log("Saved user object:", user);
+
+            if (user.role === "ADMIN") {
                 window.location.href = "admin.html";
             } else {
                 window.location.href = "dashboard.html";
             }
-        })
-        .catch(() => alert("Invalid login"));
+
+        } catch (error) {
+            console.error("Login error:", error);
+            errorMsg.innerText = "Invalid email or password.";
+        }
     }
 </script>
 
