@@ -13,15 +13,13 @@ import java.util.List;
 public class AdminController {
 
     private final Student_Repositories studentRepo;
-    private final BookRepository bookRepo;
-    private final BorrowRepository borrowRepo;
+//    private final BookRepository bookRepo;
+//    private final BorrowRepository borrowRepo;
 
-    public AdminController(Student_Repositories studentRepo,
-                           BookRepository bookRepo,
-                           BorrowRepository borrowRepo) {
+    public AdminController(Student_Repositories studentRepo) {
         this.studentRepo = studentRepo;
-        this.bookRepo = bookRepo;
-        this.borrowRepo = borrowRepo;
+//        this.bookRepo = bookRepo;
+//        this.borrowRepo = borrowRepo;
     }
 
     // ================= STUDENTS =================
@@ -52,79 +50,79 @@ public class AdminController {
 
     // ================= BOOKS =================
 
-    @PostMapping("/books")
-    public Book addBook(@RequestBody Book book) {
-        book.setAvailable(true); // ✅ ALWAYS AVAILABLE WHEN CREATED
-        return bookRepo.save(book);
-    }
+//    @PostMapping("/books")
+//    public Book addBook(@RequestBody Book book) {
+//        book.setAvailable(true); // ✅ ALWAYS AVAILABLE WHEN CREATED
+//        return bookRepo.save(book);
+//    }
 
-    @GetMapping("/books")
-    public List<Book> getBooks() {
-        return bookRepo.findAll();
-    }
+//    @GetMapping("/books")
+//    public List<Book> getBooks() {
+//        return bookRepo.findAll();
+//    }
+//
+//    @PutMapping("/books/{id}") // ✅ ADD UPDATE
+//    public Book updateBook(@PathVariable String id,
+//                           @RequestBody Book updated) {
+//
+//        Book book = bookRepo.findById(id).orElseThrow();
+//
+//        book.setTitle(updated.getTitle());
+//        book.setAuthor(updated.getAuthor());
+//
+//        return bookRepo.save(book);
+//    }
 
-    @PutMapping("/books/{id}") // ✅ ADD UPDATE
-    public Book updateBook(@PathVariable String id,
-                           @RequestBody Book updated) {
-
-        Book book = bookRepo.findById(id).orElseThrow();
-
-        book.setTitle(updated.getTitle());
-        book.setAuthor(updated.getAuthor());
-
-        return bookRepo.save(book);
-    }
-
-    @DeleteMapping("/books/{id}")
-    public void deleteBook(@PathVariable String id) {
-        bookRepo.deleteById(id);
-    }
-
-    // ================= ISSUE BOOK =================
-
-    @PostMapping("/issue")
-    public BorrowBook issueBook(@RequestParam String studentId,
-                                @RequestParam String bookId) {
-
-        StudentEntities student = studentRepo.findById(studentId).orElseThrow();
-        Book book = bookRepo.findById(bookId).orElseThrow();
-
-        if (!book.isAvailable()) {
-            throw new RuntimeException("Book already issued");
-        }
-
-        book.setAvailable(false);
-        bookRepo.save(book);
-
-        BorrowBook borrow = new BorrowBook();
-        borrow.setStudentId(student.getId());
-        borrow.setStudentName(student.getName());
-        borrow.setBookId(book.getId());
-        borrow.setBookTitle(book.getTitle());
-
-        return borrowRepo.save(borrow);
-    }
-
-    // ================= RETURN BOOK =================
-
-    @PostMapping("/return/{id}") // ✅ NEW
-    public BorrowBook returnBook(@PathVariable String id) {
-
-        BorrowBook borrow = borrowRepo.findById(id).orElseThrow();
-
-        Book book = bookRepo.findById(borrow.getBookId()).orElseThrow();
-        book.setAvailable(true);
-        bookRepo.save(book);
-
-        borrow.setReturnDate(java.time.LocalDate.now());
-
-        return borrowRepo.save(borrow);
-    }
-
-    // ================= BORROW LIST =================
-
-    @GetMapping("/borrow")
-    public List<BorrowBook> getBorrow() {
-        return borrowRepo.findAll();
-    }
+//    @DeleteMapping("/books/{id}")
+//    public void deleteBook(@PathVariable String id) {
+//        bookRepo.deleteById(id);
+//    }
+//
+//    // ================= ISSUE BOOK =================
+//
+//    @PostMapping("/issue")
+//    public BorrowBook issueBook(@RequestParam String studentId,
+//                                @RequestParam String bookId) {
+//
+//        StudentEntities student = studentRepo.findById(studentId).orElseThrow();
+//        Book book = bookRepo.findById(bookId).orElseThrow();
+//
+//        if (!book.isAvailable()) {
+//            throw new RuntimeException("Book already issued");
+//        }
+//
+//        book.setAvailable(false);
+//        bookRepo.save(book);
+//
+//        BorrowBook borrow = new BorrowBook();
+//        borrow.setStudentId(student.getId());
+//        borrow.setStudentName(student.getName());
+//        borrow.setBookId(book.getId());
+//        borrow.setBookTitle(book.getTitle());
+//
+//        return borrowRepo.save(borrow);
+//    }
+//
+//    // ================= RETURN BOOK =================
+//
+//    @PostMapping("/return/{id}") // ✅ NEW
+//    public BorrowBook returnBook(@PathVariable String id) {
+//
+//        BorrowBook borrow = borrowRepo.findById(id).orElseThrow();
+//
+//        Book book = bookRepo.findById(borrow.getBookId()).orElseThrow();
+//        book.setAvailable(true);
+//        bookRepo.save(book);
+//
+//        borrow.setReturnDate(java.time.LocalDate.now());
+//
+//        return borrowRepo.save(borrow);
+//    }
+//
+//    // ================= BORROW LIST =================
+//
+//    @GetMapping("/borrow")
+//    public List<BorrowBook> getBorrow() {
+//        return borrowRepo.findAll();
+//    }
 }
