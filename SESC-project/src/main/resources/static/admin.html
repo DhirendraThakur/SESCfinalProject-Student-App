@@ -199,6 +199,16 @@
             font-weight: 700;
             border: 1px solid #bfdbfe;
         }
+<<<<<<< HEAD
+=======
+        .available { background:green; }
+        .issued { background:red; }
+        .BORROWED { background:orange; }
+        .RETURNED { background:green; }
+        .ACTIVE { background:green; }
+        .COMPLETED { background:grey; }
+        .DROPPED { background:red; }
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
 
         .stats {
             display: grid;
@@ -522,6 +532,7 @@
 <body>
 
 <div class="sidebar">
+<<<<<<< HEAD
     <div>
         <div class="brand">
             <div class="brand-icon">
@@ -559,6 +570,12 @@
     <div class="sidebar-footer">
         Premium Admin Workspace • Student Management System
     </div>
+=======
+    <h2>Admin</h2>
+    <button onclick="showSection('students')">Students</button>
+    <button onclick="showSection('courses')">Courses</button>
+    <button onclick="showSection('enrolments')">Enrolments</button>
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
 </div>
 
 <div class="main">
@@ -572,6 +589,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <div class="stats">
         <div class="stat-card">
             <div class="stat-icon students-icon"><i class="fa-solid fa-users"></i></div>
@@ -596,6 +614,21 @@
             <h3>Live</h3>
             <p>System monitoring active</p>
         </div>
+=======
+
+
+    <!-- COURSES -->
+    <div id="courses" class="card">
+        <h3>Courses</h3>
+        <button class="btn btn-primary" onclick="openCourseModal()">+ Add Course</button>
+        <table id="courseTable"></table>
+    </div>
+
+    <!-- ENROLMENTS -->
+    <div id="enrolments" class="card">
+        <h3>Enrolments</h3>
+        <table id="enrolmentTable"></table>
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
     </div>
 
     <div id="studentsSection" class="card">
@@ -659,6 +692,7 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 <!-- Add/Edit Book Modal -->
 <div class="modal" id="bookModal">
     <div class="modal-content">
@@ -685,9 +719,16 @@
 
 <!-- Edit Student Modal -->
 <div class="modal" id="studentModal">
+=======
+
+
+<!-- EDIT STUDENT MODAL -->
+<div class="modal" id="studentEditModal">
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
     <div class="modal-content">
         <h3>Edit Student</h3>
 
+<<<<<<< HEAD
         <div class="modal-grid">
             <input type="hidden" id="editStudentId">
 
@@ -716,17 +757,54 @@
             <button class="primary" onclick="saveStudentEdit()">Save Changes</button>
             <button class="secondary" onclick="closeStudentModal()">Close</button>
         </div>
+=======
+
+
+<!-- ADD COURSE MODAL -->
+<div class="modal" id="courseModal">
+    <div class="modal-content">
+        <h3>Add Course</h3>
+        <input id="cTitle" placeholder="Title">
+        <input id="cDesc" placeholder="Description">
+        <input id="cCredits" type="number" placeholder="Credits">
+        <input id="cDuration" type="number" placeholder="Duration (weeks)">
+        <button class="btn btn-primary" onclick="saveCourse()">Save</button>
+        <button onclick="closeCourseModal()">Close</button>
+    </div>
+</div>
+
+<!-- EDIT COURSE MODAL -->
+<div class="modal" id="courseEditModal">
+    <div class="modal-content">
+        <h3>Edit Course</h3>
+        <input id="ecTitle" placeholder="Title">
+        <input id="ecDesc" placeholder="Description">
+        <input id="ecCredits" type="number" placeholder="Credits">
+        <input id="ecDuration" type="number" placeholder="Duration (weeks)">
+        <button class="btn btn-primary" onclick="updateCourse()">Update</button>
+        <button onclick="closeCourseEdit()">Cancel</button>
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
     </div>
 </div>
 
 <script>
     const API = "http://localhost:8080/api/admin";
 
+<<<<<<< HEAD
     let editingBookId = null;
 
     function logout() {
         localStorage.removeItem("user");
         window.location.href = "login.html";
+=======
+    // NAVIGATION
+    function showSection(id){
+        document.getElementById("students").style.display="none";
+        document.getElementById("courses").style.display="none";
+        document.getElementById("enrolments").style.display="none";
+        document.getElementById(id).style.display="block";
+        if(id === 'enrolments') loadEnrolments();
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
     }
 
     function setActive(buttonId) {
@@ -803,6 +881,7 @@
 
             let html = `
             <tr>
+<<<<<<< HEAD
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
@@ -852,6 +931,18 @@
             alert("Student updated successfully");
             closeStudentModal();
             loadStudents();
+=======
+            <td>${s.name || '<span style="color:red">Missing Name</span>'}</td>
+            <td>${s.email}</td>
+            <td>
+            <button class="btn btn-warning" onclick="editStudent('${s.id}','${s.name || ''}','${s.email || ''}','${s.phone || ''}','${s.address || ''}')">Edit</button>
+            <button class="btn btn-danger" onclick="deleteStudent('${s.id}')">Delete</button>
+            </td>
+            </tr>`;
+
+            const displayName = s.name || s.email || 'Unknown';
+            studentSelect.innerHTML += `<option value="${s.id}" data-name="${displayName}">${displayName}</option>`;
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
         });
     }
 
@@ -878,6 +969,7 @@
                 return;
             }
 
+<<<<<<< HEAD
             let html = `
             <tr>
                 <th>Title</th>
@@ -940,6 +1032,119 @@
         .then(() => {
             loadBooks();
             loadBooksDropdown();
+=======
+    function updateStudent(){
+    fetch(`/api/admin/students/${studentEditId}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    name:sName.value,
+    email:sEmail.value,
+    phone:sPhone.value,
+    address:sAddress.value
+    })
+    })
+    .then(()=>{
+    closeStudentModal();
+    loadStudents();
+    });
+    }
+
+
+
+    // ================= COURSES =================
+    let courseEditId;
+
+    function openCourseModal() { courseModal.style.display="block"; }
+    function closeCourseModal() { courseModal.style.display="none"; }
+
+    function saveCourse(){
+        fetch("/api/courses", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({
+                title: cTitle.value,
+                description: cDesc.value,
+                credits: parseInt(cCredits.value) || 0,
+                duration: parseInt(cDuration.value) || 0
+            })
+        }).then(() => {
+            closeCourseModal();
+            loadCourses();
+        });
+    }
+
+    function loadCourses(){
+        fetch("/api/courses")
+        .then(res => res.json())
+        .then(data => {
+            courseTable.innerHTML = "<tr><th>Title</th><th>Description</th><th>Credits</th><th>Duration</th><th>Actions</th></tr>";
+            data.forEach(c => {
+                courseTable.innerHTML += `
+                <tr>
+                    <td>${c.title}</td>
+                    <td>${c.description}</td>
+                    <td>${c.credits}</td>
+                    <td>${c.duration} weeks</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editCourse('${c.id}','${c.title}','${c.description}',${c.credits},${c.duration})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteCourse('${c.id}')">Delete</button>
+                    </td>
+                </tr>`;
+            });
+        });
+    }
+
+    function deleteCourse(id){
+        if(!confirm("Are you sure?")) return;
+        fetch(`/api/courses/${id}`, { method: "DELETE" })
+        .then(() => loadCourses());
+    }
+
+    function editCourse(id, title, desc, credits, duration){
+        courseEditId = id;
+        ecTitle.value = title;
+        ecDesc.value = desc;
+        ecCredits.value = credits;
+        ecDuration.value = duration;
+        courseEditModal.style.display = "block";
+    }
+
+    function closeCourseEdit() { courseEditModal.style.display = "none"; }
+
+    function updateCourse(){
+        fetch(`/api/courses/${courseEditId}`, {
+            method: "PUT",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({
+                title: ecTitle.value,
+                description: ecDesc.value,
+                credits: parseInt(ecCredits.value) || 0,
+                duration: parseInt(ecDuration.value) || 0
+            })
+        }).then(() => {
+            closeCourseEdit();
+            loadCourses();
+        });
+    }
+
+    // ================= ENROLMENTS =================
+    function loadEnrolments(){
+        fetch("/api/enrolments")
+        .then(res => res.json())
+        .then(data => {
+            enrolmentTable.innerHTML = "<tr><th>Student Name</th><th>Course Title</th><th>Enrolled Date</th><th>Status</th></tr>";
+            data.forEach(e => {
+                const date = new Date(e.enrolledAt).toLocaleDateString('en-GB');
+                enrolmentTable.innerHTML += `
+                <tr>
+                    <td>${e.studentName}</td>
+                    <td>${e.course ? e.course.title : 'Deleted Course'}</td>
+                    <td>${date}</td>
+                    <td><span class="badge ${e.status}">${e.status}</span></td>
+                </tr>`;
+            });
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
         });
     }
 
@@ -993,7 +1198,14 @@
     };
 
     loadStudents();
+<<<<<<< HEAD
     loadBooks();
+=======
+
+    loadCourses();
+    loadEnrolments();
+
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
 </script>
 
 </body>

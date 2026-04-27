@@ -529,6 +529,7 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 <div class="page">
     <div class="hero">
         <div class="hero-left">
@@ -537,6 +538,26 @@
                 Manage your profile, enrol in courses, and keep track of your academic journey
                 from one clean and simple dashboard.
             </p>
+=======
+<!-- CONTENT -->
+<div class="container">
+
+    <div class="card">
+        <p><b>Student ID:</b> <span id="studentIdDisp" style="color: #4da6ff; font-weight: bold;"></span> 
+            <button onclick="copyId()" style="width: auto; padding: 2px 8px; font-size: 11px; margin-left: 5px; display: inline-block;">Copy</button>
+            <span id="copyFeedback" style="font-size: 11px; color: green; display: none; margin-left: 5px;">Copied!</span>
+        </p>
+        <h3 id="name"></h3>
+        <p id="email"></p>
+        <p id="phone"></p>
+        <p id="address"></p>
+    </div>
+
+    <div class="right-section">
+        <div class="service-card">
+            <h4>Finance Service</h4>
+            <button onclick="finance()">Open</button>
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
         </div>
 
         <div class="hero-badge">
@@ -689,6 +710,7 @@
         window.location.href = "login.html";
     }
 
+<<<<<<< HEAD
     const dropdown = document.getElementById("dropdown");
     const modal = document.getElementById("modal");
     const profileModal = document.getElementById("profileModal");
@@ -760,6 +782,26 @@
     }
 
     renderUserInfo();
+=======
+    // display user
+    if (user) {
+        studentIdDisp.innerText = user.id;
+        name.innerText = user.name;
+        email.innerText = user.email;
+        phone.innerText = user.phone;
+        address.innerText = user.address;
+    }
+
+    function copyId() {
+        navigator.clipboard.writeText(user.id).then(() => {
+            const feedback = document.getElementById("copyFeedback");
+            feedback.style.display = "inline";
+            setTimeout(() => {
+                feedback.style.display = "none";
+            }, 1500);
+        });
+    }
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
 
     function toggleMenu() {
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
@@ -852,8 +894,75 @@
         }
     }
 
+<<<<<<< HEAD
     function finance() {
         alert("Finance coming soon");
+=======
+    // services
+    function finance() { window.open("http://localhost:8082/index.html", "_blank"); }
+    function library() { window.open("http://localhost:8081/student.html", "_blank"); }
+
+
+    // --- COURSES & ENROLMENTS LOGIC ---
+    let myEnrolledCourseIds = [];
+
+    async function loadEnrolments() {
+        try {
+            const res = await fetch(`/api/enrolments/${user.id}`);
+            const grid = document.getElementById('enrolmentsGrid');
+            
+            if (!res.ok) {
+                grid.innerHTML = "<p>Error loading enrolments.</p>";
+                return;
+            }
+            const enrolments = await res.json();
+            
+            myEnrolledCourseIds = enrolments.map(e => e.course.id);
+            
+            if (enrolments.length === 0) {
+                grid.innerHTML = "<p>You are not enrolled in any courses yet.</p>";
+            } else {
+                grid.innerHTML = "";
+                enrolments.forEach(e => {
+                    const card = document.createElement('div');
+                    card.className = 'course-card';
+                    const title = document.createElement('h4');
+                    title.textContent = e.course.title;
+                    const description = document.createElement('p');
+                    description.textContent = e.course.description;
+                    const creditsDuration = document.createElement('p');
+                    const creditsLabel = document.createElement('b');
+                    creditsLabel.textContent = 'Credits:';
+                    creditsDuration.appendChild(creditsLabel);
+                    creditsDuration.appendChild(document.createTextNode(` ${e.course.credits} | `));
+                    const durationLabel = document.createElement('b');
+                    durationLabel.textContent = 'Duration:';
+                    creditsDuration.appendChild(durationLabel);
+                    creditsDuration.appendChild(document.createTextNode(` ${e.course.duration} weeks`));
+                    const status = document.createElement('p');
+                    const statusLabel = document.createElement('b');
+                    statusLabel.textContent = 'Status:';
+                    status.appendChild(statusLabel);
+                    status.appendChild(document.createTextNode(` ${e.status}`));
+                    const enrolled = document.createElement('p');
+                    const enrolledLabel = document.createElement('b');
+                    enrolledLabel.textContent = 'Enrolled:';
+                    enrolled.appendChild(enrolledLabel);
+                    enrolled.appendChild(document.createTextNode(` ${new Date(e.enrolledAt).toLocaleDateString()}`));
+                    card.appendChild(title);
+                    card.appendChild(description);
+                    card.appendChild(creditsDuration);
+                    card.appendChild(status);
+                    card.appendChild(enrolled);
+                    grid.appendChild(card);
+                });
+            }
+        } catch (err) {
+            console.error("Error loading enrolments", err);
+        } finally {
+            loadCourses(); // Load courses even if enrolments fail
+        }
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
     }
 
     function library() {

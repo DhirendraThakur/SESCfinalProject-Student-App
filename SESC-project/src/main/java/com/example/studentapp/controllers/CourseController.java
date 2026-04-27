@@ -28,4 +28,28 @@ public class CourseController {
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Course not found"));
     }
+
+    @PostMapping
+    public Course createCourse(@RequestBody Course course) {
+        return courseService.createCourse(course);
+    }
+
+    @PutMapping("/{id}")
+    public org.springframework.http.ResponseEntity<?> updateCourse(@PathVariable String id, @RequestBody Course course) {
+        try {
+            return org.springframework.http.ResponseEntity.ok(courseService.updateCourse(id, course));
+        } catch (RuntimeException e) {
+            return org.springframework.http.ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public org.springframework.http.ResponseEntity<?> deleteCourse(@PathVariable String id) {
+        try {
+            courseService.deleteCourse(id);
+            return org.springframework.http.ResponseEntity.ok(java.util.Map.of("message", "Course deleted"));
+        } catch (RuntimeException e) {
+            return org.springframework.http.ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

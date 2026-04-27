@@ -29,4 +29,9 @@ public class EnrolmentController {
     public List<EnrolmentResponseDTO> getStudentEnrolments(@PathVariable String studentId) {
         return enrolmentService.getStudentEnrolments(studentId);
     }
+
+    @GetMapping
+    public List<EnrolmentResponseDTO> getAllEnrolments() {
+        return enrolmentService.getAllEnrolments();
+    }
 }

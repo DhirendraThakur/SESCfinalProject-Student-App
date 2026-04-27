@@ -13,6 +13,7 @@ import java.util.List;
 public class AdminController {
 
     private final Student_Repositories studentRepo;
+<<<<<<< HEAD
 //    private final BookRepository bookRepo;
 //    private final BorrowRepository borrowRepo;
 
@@ -20,6 +21,11 @@ public class AdminController {
         this.studentRepo = studentRepo;
 //        this.bookRepo = bookRepo;
 //        this.borrowRepo = borrowRepo;
+=======
+
+    public AdminController(Student_Repositories studentRepo) {
+        this.studentRepo = studentRepo;
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
     }
 
     // ================= STUDENTS =================
@@ -48,6 +54,7 @@ public class AdminController {
         studentRepo.deleteById(id);
     }
 
+<<<<<<< HEAD
     // ================= BOOKS =================
 
 //    @PostMapping("/books")
@@ -125,4 +132,7 @@ public class AdminController {
 //    public List<BorrowBook> getBorrow() {
 //        return borrowRepo.findAll();
 //    }
+=======
+
+>>>>>>> 622f99c4fd434ba888c512cacd8346387e9cde2d
 }

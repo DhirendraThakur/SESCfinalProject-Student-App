@@ -1,184 +1,110 @@
-# SESC Student App
+# SESC Student Microservices System
 
-A **Spring Boot** backend for a student-facing application: REST APIs for registration, login, courses, and enrolments, plus simple static HTML pages (welcome, login, register, dashboard). Data is stored in **MongoDB**.
+A distributed student management system comprising three Spring Boot microservices. This system enables student registration, course enrolment, library resource management, and financial oversight with integrated graduation eligibility checks.
 
-The runnable Maven project lives in **`SESC-project/`**.
+## Microservices Overview
 
----
+The system consists of three interconnected services and a reference implementation:
 
-## Tech stack
-
-| Layer | Technology |
-|--------|------------|
-| Runtime | Java **21** |
-| Framework | Spring Boot **3.x** (Web MVC, Data MongoDB) |
-| Database | **MongoDB** |
-| Build | **Maven** (wrapper included: `mvnw` / `mvnw.cmd`) |
-| Boilerplate | **Lombok** |
+| Service | Port | Database | Primary Purpose |
+| :--- | :--- | :--- | :--- |
+| **Student Service** (`SESC-project`) | `8080` | MongoDB (`student-db`) | Core student data, auth, courses, and enrolments. |
+| **Library Service** (`library-service`) | `8081` | MongoDB (`library-db`) | Book catalog, student library accounts, and loan tracking. |
+| **Finance Service** (`finance-service`) | `8082` | MongoDB (`finance-db`) | Student financial accounts, invoicing, and eligibility tracking. |
 
 ---
 
-## Prerequisites
+## Technical Stack
 
-- **JDK 21** (or compatible; the build targets Java 21 per `pom.xml`). Set `JAVA_HOME` so Maven uses the correct JDK.
-- **MongoDB** running and reachable. With default settings, Spring Boot connects to `mongodb://localhost:27017` (no extra config in `application.properties` unless you add it).
-- Network access for the **first** build (Maven downloads dependencies).
-
----
-
-## Database Seeding
-
-When you start the application, a **Course Seeder** automatically checks if there are any courses in the database.
-If the `courses` collection is empty, it will automatically populate MongoDB with 3 sample test courses:
-1. Introduction to Algorithms
-2. Web Development
-3. Database Management
-
-This ensures that the application is immediately testable upon startup without requiring manual database inserts.
+*   **Runtime:** Java 21
+*   **Framework:** Spring Boot 3.4.1
+*   **Database:** MongoDB (Local instance at `localhost:27017`)
+*   **Communication:** REST (using `RestTemplate`)
+*   **Frontend:** Pure HTML/JavaScript (embedded in each service)
 
 ---
 
-## Project layout
+## System Integration Flow
+
+1.  **Student Registration:** When a student registers in the **Student Service (8080)**, it automatically triggers:
+    *   An API call to the **Library Service (8081)** to create a library account.
+    *   An API call to the **Finance Service (8082)** to create a financial account.
+2.  **Course Enrolment:** When a student enrols in a course via the **Student Service**:
+    *   An enrolment record is created locally.
+    *   An API call is sent to the **Finance Service** to issue a £500 tuition fee invoice.
+3.  **Library Interaction:** Library resource management is handled via the Library service, which can issue fines back to the Finance service (integrated logic).
+4.  **Graduation Eligibility:** The Student Service provides an endpoint (`/api/students/{id}/graduation`) that queries the Finance Service to verify if there are any outstanding invoices before confirming eligibility.
+
+---
+
+## How to Run the System
+
+To run the full system locally, follow these steps in order:
+
+### 1. Prerequisites
+Ensure you have **MongoDB** running locally on the default port `27017`.
+
+### 2. Start the Microservices
+Open three separate terminal windows/tabs and run each service:
+
+**Terminal 1: Student Service**
+```bash
+cd SESC-project
+./mvnw spring-boot:run
+```
+
+**Terminal 2: Library Service**
+```bash
+cd library-service
+./mvnw spring-boot:run
+```
+
+**Terminal 3: Finance Service**
+```bash
+cd finance-service
+./mvnw spring-boot:run
+```
+
+### 3. Accessing the UI Portals
+
+Each service provides a simple frontend for its specific features:
+
+*   **Main Application Portal:** [http://localhost:8080/](http://localhost:8080/)
+    *   Register/Login to manage courses and check graduation eligibility.
+*   **Library Portal:** [http://localhost:8081/](http://localhost:8081/)
+    *   Manage books and check library account status.
+*   **Finance Portal:** [http://localhost:8082/](http://localhost:8082/)
+    *   View invoices and pay outstanding balances.
+
+---
+
+## API Overview (Key Endpoints)
+
+### Student Service (8080)
+- `POST /api/students/register`: Create student & register in all services.
+- `POST /api/enrolments`: Enrol student in course & issue finance invoice.
+- `GET /api/students/{id}/graduation`: Check eligibility to graduate.
+
+### Library Service (8081)
+- `POST /api/library/accounts/register`: create internal library record.
+- `GET /api/library/books`: List available catalog.
+
+### Finance Service (8082)
+- `POST /accounts/`: Create finance account.
+- `POST /invoices/`: Issue a new invoice (outstanding by default).
+- `GET /accounts/student/{id}`: Detailed account balance and status check.
+- `PUT /invoices/{id}/pay`: Settle an invoice.
+
+---
+
+## Project Layout
 
 ```
 SESCfinalProject-Student-App/
-├── README.md                 ← this file
-└── SESC-project/
-    ├── pom.xml
-    ├── mvnw, mvnw.cmd        ← Maven Wrapper (no global Maven required)
-    └── src/main/
-        ├── java/com/example/studentapp/
-        │   ├── SescProjectApplication.java
-        │   ├── controllers/
-        │   │   ├── StudentController.java
-        │   │   ├── CourseController.java
-        │   │   └── EnrolmentController.java
-        │   ├── service/
-        │   │   ├── StudentService.java
-        │   │   ├── CourseService.java
-        │   │   └── EnrolmentService.java
-        │   ├── repositories/
-        │   ├── entities/
-        │   ├── seeder/
-        │   │   └── CourseSeeder.java
-        │   └── dto/
-        └── resources/
-            ├── application.properties
-            └── static/       ← HTML UI (index, login, register, dashboard)
+├── SESC-project/             # Student Service (Source on Github)
+├── library-service/          # Library Service (Source on Github)
+└── finance-service/          # Finance Service (Local reference only)
 ```
 
----
-
-## Getting started
-
-### 1. Go to the project folder
-
-```bash
-cd SESC-project
-```
-
-### 2. Use JDK 21+
-
-Example on macOS (paths vary by install):
-
-```bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 21)
-java -version
-```
-
-### 3. Make the Maven wrapper executable (if needed)
-
-If `./mvnw` fails with “permission denied”:
-
-```bash
-chmod +x mvnw
-```
-
-### 4. Start MongoDB
-
-Start your local MongoDB instance (or point the app at a remote URI — see **Configuration** below).
-
-### 5. Run the application
-
-```bash
-./mvnw clean spring-boot:run
-```
-
-On Windows:
-
-```cmd
-mvnw.cmd clean spring-boot:run
-```
-
-### 6. Open the app
-
-By default the server listens on **port 8080**.
-
-| What | URL |
-|------|-----|
-| Welcome / entry | [http://localhost:8080/](http://localhost:8080/) or `/index.html` |
-| Login | `/login.html` |
-| Register | `/register.html` |
-| Dashboard | `/dashboard.html` |
-
----
-
-## Build a JAR and run it
-
-```bash
-./mvnw -DskipTests package
-java -jar target/SESC-project-0.0.1-SNAPSHOT.jar
-```
-
----
-
-## API overview
-
-### Students API (`/api/students`)
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/students/register` | Register a new student (JSON body) |
-| `POST` | `/api/students/login` | Login with `email` and `password` in JSON |
-| `PUT` | `/api/students/{id}` | Update student by ID |
-| `DELETE` | `/api/students/{id}` | Delete student by ID |
-
-### Courses API (`/api/courses`)
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET`  | `/api/courses` | Get all available courses |
-| `GET`  | `/api/courses/{id}` | Get course by ID |
-
-### Enrolments API (`/api/enrolments`)
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/enrolments` | Enroll a student in a course (requires `studentId`, `courseId`) |
-| `GET`  | `/api/enrolments/{studentId}` | Fetch all full course details a student is enrolled in |
-
-*Controllers use `@CrossOrigin` for browser access from other origins during development.*
-
----
-
-## Configuration
-
-Default application name is set in `SESC-project/src/main/resources/application.properties`. To customize MongoDB, add standard Spring Boot properties, for example:
-
-```properties
-spring.data.mongodb.uri=mongodb://localhost:27017/yourDatabaseName
-```
-
-Or use `spring.data.mongodb.host`, `port`, and `database` as needed.
-
----
-
-## Tests
-
-```bash
-./mvnw test
-```
-
----
-
-## Notes for contributors
-
-- **Security:** Login compares passwords as stored in the database; treat this as a course/demo baseline, not production-ready auth.
-- **IDE:** If you use IntelliJ, align the project SDK with **JDK 21+** so it matches the Maven compiler settings in `pom.xml`.
+> [!NOTE]
+> For this version of the project, the **finance-service** is a local-only reference implementation and is NOT committed to the public repository.
