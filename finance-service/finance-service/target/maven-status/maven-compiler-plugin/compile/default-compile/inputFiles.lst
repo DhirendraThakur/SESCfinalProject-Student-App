@@ -1,0 +1,12 @@
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/FinanceServiceApplication.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/controllers/AccountController.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/controllers/InvoiceController.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/dto/AccountRequestDTO.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/dto/AccountResponseDTO.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/dto/InvoiceRequestDTO.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/entities/Account.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/entities/Invoice.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/repositories/AccountRepository.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/repositories/InvoiceRepository.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/service/AccountService.java
+/Users/boluwatifeajayi/Documents/school/SESCfinalProject-Student-App/finance-service/src/main/java/com/finance/financeservice/service/InvoiceService.java
