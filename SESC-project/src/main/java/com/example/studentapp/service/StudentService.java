@@ -32,6 +32,7 @@ public class StudentService {
 
         return repo.save(student);
     }
+
     public StudentEntities register(StudentEntities student) {
         StudentEntities saved = repo.save(student);
 
@@ -65,13 +66,14 @@ public class StudentService {
 
         return saved;
     }
+
     public Optional<StudentEntities> getById(String id) {
         return repo.findById(id);
     }
 
-//    public List<StudentEntities> getAll() {
-//        return repo.findAll();
-//    }
+    // public List<StudentEntities> getAll() {
+    // return repo.findAll();
+    // }
     public Optional<StudentEntities> login(String email, String password) {
         Optional<StudentEntities> user = repo.findByEmail(email);
 
@@ -80,6 +82,7 @@ public class StudentService {
         }
         return Optional.empty();
     }
+
     public StudentEntities update(String id, StudentEntities updated) {
         return repo.findById(id).map(student -> {
             student.setName(updated.getName());
