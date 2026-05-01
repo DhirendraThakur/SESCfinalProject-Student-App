@@ -17,12 +17,14 @@
         </processorPath>
         <module name="SESC-project" />
         <module name="library-service" />
+        <module name="finance-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="SESC-project" options="-parameters" />
+      <module name="finance-service" options="-parameters" />
       <module name="library-service" options="-parameters" />
     </option>
   </component>

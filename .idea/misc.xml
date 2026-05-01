@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/SESC-project/pom.xml" />
         <option value="$PROJECT_DIR$/library-service/pom.xml" />
+        <option value="$PROJECT_DIR$/finance-service/pom.xml" />
       </list>
     </option>
   </component>

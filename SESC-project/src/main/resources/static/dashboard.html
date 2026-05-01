@@ -1,26 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        body {
-            font-family: Arial;
+        * {
             margin: 0;
-            background: #f4f6f9;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* NAVBAR */
+        :root {
+            --primary: #2563eb;
+            --secondary: #06b6d4;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --text: #1f2937;
+            --muted: #64748b;
+            --soft: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(37,99,235,0.12), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(6,182,212,0.12), transparent 30%),
+                linear-gradient(180deg, #f8fbff, #eef4fb);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
         .navbar {
-            background: #4facfe;
-            padding: 15px 20px;
-            color: white;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(226,232,240,0.9);
+            padding: 16px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 22px rgba(37,99,235,0.24);
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            color: var(--dark);
+            font-size: 22px;
+        }
+
+        .brand p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .nav-user {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid #bfdbfe;
         }
 
         .user-menu {
@@ -28,224 +103,739 @@
             cursor: pointer;
         }
 
+        .user-trigger {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: var(--dark);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.25s;
+        }
+
+        .user-trigger:hover {
+            transform: translateY(-2px);
+            background: #020617;
+        }
+
         .dropdown {
             position: absolute;
             right: 0;
-            top: 35px;
+            top: 58px;
             background: white;
-            width: 150px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 190px;
+            border-radius: 18px;
+            box-shadow: 0 20px 45px rgba(15,23,42,0.16);
             display: none;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
         }
 
         .dropdown a {
-            display: block;
-            padding: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 14px 16px;
             text-decoration: none;
-            color: black;
+            color: var(--text);
+            font-size: 14px;
+            transition: 0.2s;
         }
 
         .dropdown a:hover {
-            background: #f0f0f0;
+            background: #eff6ff;
+            color: #1d4ed8;
         }
 
-        /* LAYOUT */
-        .container {
-            display: flex;
-            justify-content: space-between;
+        .page {
+            max-width: 1300px;
+            margin: auto;
             padding: 30px;
         }
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        .hero {
+            background: linear-gradient(135deg, rgba(37,99,235,0.94), rgba(6,182,212,0.92));
+            color: white;
+            border-radius: 32px;
+            padding: 42px;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: 1.7fr 0.8fr;
+            gap: 24px;
+            align-items: center;
+            margin-bottom: 26px;
         }
 
-        /* RIGHT SIDE */
-        .right-section {
+        .hero-tag {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(255,255,255,0.16);
+            border: 1px solid rgba(255,255,255,0.22);
+            padding: 9px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            line-height: 1.15;
+            margin-bottom: 14px;
+        }
+
+        .hero p {
+            max-width: 720px;
+            line-height: 1.75;
+            opacity: 0.96;
+            font-size: 16px;
+        }
+
+        .hero-card {
+            background: rgba(255,255,255,0.16);
+            border: 1px solid rgba(255,255,255,0.24);
+            border-radius: 24px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-card span {
+            display: block;
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .hero-card strong {
+            font-size: 18px;
+            word-break: break-word;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(226,232,240,0.95);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            color: white;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .blue { background: linear-gradient(135deg, #2563eb, #60a5fa); }
+        .green { background: linear-gradient(135deg, #16a34a, #4ade80); }
+        .orange { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+
+        .stat-card h3 {
+            font-size: 32px;
+            color: var(--dark);
+        }
+
+        .stat-card p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1.45fr 0.9fr;
+            gap: 24px;
+            margin-bottom: 26px;
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(226,232,240,0.95);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #1d4ed8, #06b6d4);
+            color: white;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .avatar {
+            width: 76px;
+            height: 76px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.18);
+            border: 2px solid rgba(255,255,255,0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .profile-header h2 {
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .profile-header p {
+            font-size: 14px;
+            opacity: 0.94;
+        }
+
+        .profile-body {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .info-box {
+            background: #f8fbff;
+            border: 1px solid #e7eef8;
+            border-radius: 18px;
+            padding: 16px;
+        }
+
+        .info-box span {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 7px;
+        }
+
+        .info-box strong {
+            color: var(--dark);
+            font-size: 15px;
+            word-break: break-word;
+        }
+
+        .copy-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .copy-btn {
+            width: auto;
+            border: none;
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 7px 11px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .copy-feedback {
+            display: none;
+            color: var(--success);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .services {
+            padding: 24px;
+        }
+
+        .services h3 {
+            color: var(--dark);
+            font-size: 24px;
+            margin-bottom: 18px;
+        }
+
+        .service-list {
+            display: grid;
+            gap: 16px;
         }
 
         .service-card {
-            background: white;
-            padding: 20px;
-            width: 250px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border: 1px solid #e7eef8;
+            background: linear-gradient(180deg, #ffffff, #f8fbff);
+            border-radius: 20px;
+            padding: 18px;
+            transition: 0.25s;
         }
 
-        .service-card button {
-            margin-top: 10px;
-            padding: 8px;
-            background: #4facfe;
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 34px rgba(15,23,42,0.10);
+        }
+
+        .service-title {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .service-title i {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: #eff6ff;
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .service-card h4 {
+            color: var(--dark);
+        }
+
+        .service-card p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .primary-btn,
+        .enrol-btn,
+        .modal-content button {
+            width: 100%;
             border: none;
-            color: white;
-            border-radius: 5px;
+            border-radius: 14px;
+            padding: 13px 14px;
             cursor: pointer;
+            font-weight: 800;
+            transition: 0.25s;
+            margin-top: 10px;
         }
 
-        /* MODAL BASE */
+        .primary-btn,
+        .modal-content button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .enrol-btn {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: white;
+        }
+
+        .enrol-btn[disabled] {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .section {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(226,232,240,0.95);
+            border-radius: 28px;
+            padding: 26px;
+            box-shadow: var(--shadow);
+            margin-bottom: 26px;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            color: var(--dark);
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 20px;
+        }
+
+        .course-card {
+            background: linear-gradient(180deg, #ffffff, #f8fbff);
+            border: 1px solid #e7eef8;
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: 0 10px 22px rgba(15,23,42,0.045);
+            transition: 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 5px;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .course-card h4 {
+            color: var(--primary);
+            font-size: 19px;
+            margin-bottom: 10px;
+        }
+
+        .course-card p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 6px 0;
+        }
+
+        .status-chip {
+            display: inline-block;
+            background: #ecfdf5;
+            color: #15803d;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        .empty-message {
+            grid-column: 1 / -1;
+            background: #f8fbff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s ease;
+            inset: 0;
+            background: rgba(15,23,42,0.52);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         .modal-content {
             background: white;
-            padding: 20px;
-            width: 320px;
-            margin: 8% auto;
-            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin: 6% auto;
+            padding: 28px;
+            border-radius: 24px;
+            box-shadow: 0 24px 50px rgba(0,0,0,0.20);
             position: relative;
-            animation: slideDown 0.3s ease;
+        }
+
+        .modal-content h3 {
+            color: var(--dark);
+            font-size: 24px;
+            margin-bottom: 18px;
         }
 
         .close-btn {
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 22px;
+            top: 15px;
+            right: 20px;
+            color: var(--danger);
             cursor: pointer;
-            color: red;
+            font-size: 24px;
         }
 
         label {
-            font-weight: bold;
-            margin-top: 10px;
             display: block;
+            margin-top: 12px;
+            margin-bottom: 7px;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 14px;
         }
 
         input {
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
+            padding: 13px;
+            border: 1px solid #dbe4f0;
+            border-radius: 14px;
+            outline: none;
         }
 
-        button {
-            width: 100%;
-            margin-top: 10px;
+        input:focus {
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.10);
         }
 
-        /* COURSES & ENROLMENTS */
-        .full-width-section {
-            margin-top: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        .profile-modal-data p {
+            background: #f8fbff;
+            border: 1px solid #e7eef8;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+
+        .graduation-box {
+            background: #f8fbff;
+            border: 1px solid #e7eef8;
+            border-radius: 16px;
+            padding: 16px;
             margin-top: 15px;
         }
-        .course-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 8px;
-            background: #fafafa;
-        }
-        .course-card h4 { margin: 0 0 10px 0; color: #4facfe; }
-        .course-card p { margin: 5px 0; font-size: 14px; }
-        .enrol-btn { background: #28a745; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        .enrol-btn[disabled] { background: #ccc; cursor: not-allowed; }
 
-        /* ANIMATION */
-        @keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity: 1;}
+        .graduation-box h4 {
+            color: var(--dark);
+            margin-bottom: 10px;
         }
 
-        @keyframes slideDown {
-            from {transform: translateY(-50px); opacity:0;}
-            to {transform: translateY(0); opacity:1;}
+        .graduation-status {
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        .eligible {
+            color: var(--success);
+        }
+
+        .not-eligible {
+            color: var(--danger);
+        }
+
+        @media (max-width: 950px) {
+            .hero,
+            .top-grid,
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                padding: 14px 18px;
+            }
+
+            .brand p,
+            .nav-user {
+                display: none;
+            }
+
+            .page {
+                padding: 18px;
+            }
+
+            .hero {
+                padding: 30px;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .profile-body {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
-    <h3>Student Dashboard</h3>
+    <div class="brand">
+        <div class="brand-icon">
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+            <h2>Student Dashboard</h2>
+            <p>Premium academic workspace</p>
+        </div>
+    </div>
 
-    <div class="user-menu" onclick="toggleMenu()">
-        <i class="fa-solid fa-user-circle"></i>
+    <div class="nav-right">
+        <div class="nav-user" id="navUserName"></div>
 
-        <div class="dropdown" id="dropdown">
-            <a href="#" onclick="updateUser()">Update</a>
-            <a href="#" onclick="deleteUser()">Delete</a>
-            <a href="#" onclick="logout()">Logout</a>
+        <div class="user-menu" onclick="toggleMenu()">
+            <div class="user-trigger">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="dropdown" id="dropdown">
+                <a href="#" onclick="updateUser(); return false;"><i class="fa-solid fa-pen"></i> Update</a>
+                <a href="#" onclick="details(); return false;"><i class="fa-solid fa-id-card"></i> Profile</a>
+                <a href="#" onclick="deleteUser(); return false;"><i class="fa-solid fa-trash"></i> Delete</a>
+                <a href="#" onclick="logout(); return false;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- CONTENT -->
-<div class="container">
+<div class="page">
 
-    <div class="card">
-        <p><b>Student ID:</b> <span id="studentIdDisp" style="color: #4da6ff; font-weight: bold;"></span> 
-            <button onclick="copyId()" style="width: auto; padding: 2px 8px; font-size: 11px; margin-left: 5px; display: inline-block;">Copy</button>
-            <span id="copyFeedback" style="font-size: 11px; color: green; display: none; margin-left: 5px;">Copied!</span>
-        </p>
-        <h3 id="name"></h3>
-        <p id="email"></p>
-        <p id="phone"></p>
-        <p id="address"></p>
-    </div>
-
-    <div class="right-section">
-        <div class="service-card">
-            <h4>Finance Service</h4>
-            <button onclick="finance()">Open</button>
+    <div class="hero">
+        <div>
+            <div class="hero-tag">
+                <i class="fa-solid fa-sparkles"></i> Academic Control Center
+            </div>
+            <h1 id="welcomeTitle">Welcome back 👋</h1>
+            <p>
+                Manage your profile, access connected services, track enrolments,
+                and check graduation eligibility from one professional student workspace.
+            </p>
         </div>
 
-        <div class="service-card">
-            <h4>Library Service</h4>
-            <button onclick="library()">Open</button>
-        </div>
-
-        <div class="service-card">
-            <h4>More Details</h4>
-            <button onclick="details()">Open</button>
+        <div class="hero-card">
+            <span>Student ID</span>
+            <strong id="heroStudentId"></strong>
         </div>
     </div>
 
-</div>
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <h3 id="courseCount">0</h3>
+            <p>Available courses</p>
+        </div>
 
-<!-- NEW SECTIONS FOR COURSES AND ENROLMENTS -->
-<div style="padding: 0 30px 30px;">
-    <div class="full-width-section">
-        <h3>My Enrolments</h3>
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <h3 id="enrolmentCount">0</h3>
+            <p>My enrolments</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="graduationSummary">Check</h3>
+            <p>Graduation status</p>
+        </div>
+    </div>
+
+    <div class="top-grid">
+        <div class="panel">
+            <div class="profile-header">
+                <div class="avatar">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div>
+                    <h2 id="name"></h2>
+                    <p id="email"></p>
+                </div>
+            </div>
+
+            <div class="profile-body">
+                <div class="info-box">
+                    <span>Student ID</span>
+                    <div class="copy-row">
+                        <strong id="studentIdDisp"></strong>
+                        <button class="copy-btn" onclick="copyId()">Copy</button>
+                        <span class="copy-feedback" id="copyFeedback">Copied!</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <span>Phone</span>
+                    <strong id="phone"></strong>
+                </div>
+
+                <div class="info-box">
+                    <span>Address</span>
+                    <strong id="address"></strong>
+                </div>
+
+                <div class="info-box">
+                    <span>Role</span>
+                    <strong id="roleDisplay">Student</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel services">
+            <h3>Connected Services</h3>
+
+            <div class="service-list">
+                <div class="service-card">
+                    <div class="service-title">
+                        <i class="fa-solid fa-wallet"></i>
+                        <h4>Finance Service</h4>
+                    </div>
+                    <p>Open fee payments, account balance, invoices, and financial tools.</p>
+                    <button class="primary-btn" onclick="finance()">Open Finance</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-title">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                        <h4>Library Service</h4>
+                    </div>
+                    <p>Access books, borrowing records, returns, and library dashboard.</p>
+                    <button class="primary-btn" onclick="library()">Open Library</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-title">
+                        <i class="fa-solid fa-id-card"></i>
+                        <h4>Profile Details</h4>
+                    </div>
+                    <p>View complete profile and check graduation eligibility.</p>
+                    <button class="primary-btn" onclick="details()">View Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <h3><i class="fa-solid fa-book-open-reader"></i> My Enrolments</h3>
+            <p>Courses you have already enrolled in.</p>
+        </div>
+
         <div class="grid" id="enrolmentsGrid">
-            <p>Loading your enrolments...</p>
+            <p class="empty-message">Loading your enrolments...</p>
         </div>
     </div>
 
-    <div class="full-width-section">
-        <h3>Available Courses</h3>
+    <div class="section">
+        <div class="section-header">
+            <h3><i class="fa-solid fa-layer-group"></i> Available Courses</h3>
+            <p>Browse available courses and enrol directly.</p>
+        </div>
+
         <div class="grid" id="coursesGrid">
-            <p>Loading courses...</p>
+            <p class="empty-message">Loading courses...</p>
         </div>
     </div>
 </div>
 
-<!-- UPDATE MODAL -->
 <div class="modal" id="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-
         <h3>Update Profile</h3>
 
         <label>Name</label>
@@ -260,79 +850,90 @@
         <label>Address</label>
         <input id="newAddress">
 
-        <button onclick="saveUpdate()">Save</button>
+        <button onclick="saveUpdate()">Save Changes</button>
     </div>
 </div>
 
-<!-- PROFILE MODAL -->
 <div class="modal" id="profileModal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeProfile()">&times;</span>
-
         <h3>My Profile</h3>
 
-        <p><b>Name:</b> <span id="pName"></span></p>
-        <p><b>Email:</b> <span id="pEmail"></span></p>
-        <p><b>Phone:</b> <span id="pPhone"></span></p>
-        <p><b>Address:</b> <span id="pAddress"></span></p>
+        <div class="profile-modal-data">
+            <p><b>Name:</b> <span id="pName"></span></p>
+            <p><b>Email:</b> <span id="pEmail"></span></p>
+            <p><b>Phone:</b> <span id="pPhone"></span></p>
+            <p><b>Address:</b> <span id="pAddress"></span></p>
+            <p><b>Student ID:</b> <span id="pStudentId"></span></p>
+        </div>
+
+        <div class="graduation-box">
+            <h4><i class="fa-solid fa-graduation-cap"></i> Graduation Eligibility</h4>
+            <p>Checks pending finance payments and unreturned library books.</p>
+            <p class="graduation-status" id="graduationStatus">Not checked</p>
+            <button onclick="checkGraduation()">Check Graduation Eligibility</button>
+        </div>
 
         <button onclick="openEdit()">Edit Profile</button>
     </div>
 </div>
 
 <script>
-    const user = JSON.parse(localStorage.getItem("user"));
+    let user = JSON.parse(localStorage.getItem("user"));
 
     if (!user) {
         window.location.href = "login.html";
     }
 
-    // display user
-    if (user) {
-        studentIdDisp.innerText = user.id;
-        name.innerText = user.name;
-        email.innerText = user.email;
-        phone.innerText = user.phone;
-        address.innerText = user.address;
+    function safeValue(value, fallback = "Not provided") {
+        return value && String(value).trim() !== "" ? value : fallback;
     }
 
+    function renderUser() {
+        const displayName = safeValue(user.name, "Student");
+
+        document.getElementById("navUserName").innerText = displayName;
+        document.getElementById("welcomeTitle").innerText = `Welcome, ${displayName} 👋`;
+        document.getElementById("name").innerText = displayName;
+        document.getElementById("email").innerText = safeValue(user.email);
+        document.getElementById("phone").innerText = safeValue(user.phone);
+        document.getElementById("address").innerText = safeValue(user.address);
+        document.getElementById("studentIdDisp").innerText = safeValue(user.id, "-");
+        document.getElementById("heroStudentId").innerText = safeValue(user.id, "-");
+        document.getElementById("roleDisplay").innerText = safeValue(user.role, "STUDENT");
+    }
+
+    renderUser();
+
     function copyId() {
-        navigator.clipboard.writeText(user.id).then(() => {
+        navigator.clipboard.writeText(user.id || "").then(() => {
             const feedback = document.getElementById("copyFeedback");
             feedback.style.display = "inline";
-            setTimeout(() => {
-                feedback.style.display = "none";
-            }, 1500);
+            setTimeout(() => feedback.style.display = "none", 1500);
         });
     }
 
-    // dropdown
     function toggleMenu() {
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     }
 
-    // logout
     function logout() {
         localStorage.clear();
         window.location.href = "login.html";
     }
 
-    // open update
     function updateUser() {
         modal.style.display = "block";
-
-        newName.value = user.name;
-        newEmail.value = user.email;
-        newPhone.value = user.phone;
-        newAddress.value = user.address;
+        newName.value = user.name || "";
+        newEmail.value = user.email || "";
+        newPhone.value = user.phone || "";
+        newAddress.value = user.address || "";
     }
 
-    // close update
     function closeModal() {
         modal.style.display = "none";
     }
 
-    // save update
     function saveUpdate() {
         const updated = {
             name: newName.value,
@@ -348,13 +949,14 @@
         })
         .then(res => res.json())
         .then(data => {
+            user = data;
             localStorage.setItem("user", JSON.stringify(data));
-            alert("Updated!");
-            location.reload();
+            renderUser();
+            closeModal();
+            alert("Profile updated successfully!");
         });
     }
 
-    // delete
     function deleteUser() {
         if (confirm("Delete account?")) {
             fetch(`/api/students/${user.id}`, {
@@ -366,117 +968,140 @@
         }
     }
 
-    // services
-    function finance() { window.open("http://localhost:8082/index.html", "_blank"); }
-    function library() { window.open("http://localhost:8081/student.html", "_blank"); }
+    function finance() {
+        window.open("http://localhost:8082/index.html", "_blank");
+    }
 
+    function library() {
+        localStorage.setItem("libraryStudent", user.id);
+        window.open("http://localhost:8081/student.html", "_blank");
+    }
 
-    // --- COURSES & ENROLMENTS LOGIC ---
+    async function checkGraduation() {
+        const statusEl = document.getElementById("graduationStatus");
+        const summaryEl = document.getElementById("graduationSummary");
+
+        statusEl.innerText = "Checking eligibility...";
+        statusEl.className = "graduation-status";
+        summaryEl.innerText = "Checking";
+
+        try {
+            const res = await fetch(`/api/students/${user.id}/graduation`);
+
+            if (!res.ok) {
+                statusEl.innerText = "Could not check graduation eligibility.";
+                statusEl.className = "graduation-status not-eligible";
+                summaryEl.innerText = "Error";
+                return;
+            }
+
+            const data = await res.json();
+
+            if (data.eligible) {
+                statusEl.innerText = "Eligible to graduate ✅";
+                statusEl.className = "graduation-status eligible";
+                summaryEl.innerText = "Eligible";
+            } else {
+                statusEl.innerText = `${data.message} ❌`;
+                statusEl.className = "graduation-status not-eligible";
+                summaryEl.innerText = "Blocked";
+            }
+
+        } catch (error) {
+            console.error("Graduation check error:", error);
+            statusEl.innerText = "Error checking eligibility.";
+            statusEl.className = "graduation-status not-eligible";
+            summaryEl.innerText = "Error";
+        }
+    }
+
     let myEnrolledCourseIds = [];
 
     async function loadEnrolments() {
         try {
             const res = await fetch(`/api/enrolments/${user.id}`);
-            const grid = document.getElementById('enrolmentsGrid');
-            
+            const grid = document.getElementById("enrolmentsGrid");
+
             if (!res.ok) {
-                grid.innerHTML = "<p>Error loading enrolments.</p>";
+                grid.innerHTML = `<p class="empty-message">Error loading enrolments.</p>`;
                 return;
             }
+
             const enrolments = await res.json();
-            
-            myEnrolledCourseIds = enrolments.map(e => e.course.id);
-            
+
+            document.getElementById("enrolmentCount").innerText = enrolments.length;
+
+            myEnrolledCourseIds = enrolments.map(e => e.course?.id).filter(Boolean);
+
             if (enrolments.length === 0) {
-                grid.innerHTML = "<p>You are not enrolled in any courses yet.</p>";
+                grid.innerHTML = `<p class="empty-message">You are not enrolled in any courses yet.</p>`;
             } else {
                 grid.innerHTML = "";
+
                 enrolments.forEach(e => {
-                    const card = document.createElement('div');
-                    card.className = 'course-card';
-                    const title = document.createElement('h4');
-                    title.textContent = e.course.title;
-                    const description = document.createElement('p');
-                    description.textContent = e.course.description;
-                    const creditsDuration = document.createElement('p');
-                    const creditsLabel = document.createElement('b');
-                    creditsLabel.textContent = 'Credits:';
-                    creditsDuration.appendChild(creditsLabel);
-                    creditsDuration.appendChild(document.createTextNode(` ${e.course.credits} | `));
-                    const durationLabel = document.createElement('b');
-                    durationLabel.textContent = 'Duration:';
-                    creditsDuration.appendChild(durationLabel);
-                    creditsDuration.appendChild(document.createTextNode(` ${e.course.duration} weeks`));
-                    const status = document.createElement('p');
-                    const statusLabel = document.createElement('b');
-                    statusLabel.textContent = 'Status:';
-                    status.appendChild(statusLabel);
-                    status.appendChild(document.createTextNode(` ${e.status}`));
-                    const enrolled = document.createElement('p');
-                    const enrolledLabel = document.createElement('b');
-                    enrolledLabel.textContent = 'Enrolled:';
-                    enrolled.appendChild(enrolledLabel);
-                    enrolled.appendChild(document.createTextNode(` ${new Date(e.enrolledAt).toLocaleDateString()}`));
-                    card.appendChild(title);
-                    card.appendChild(description);
-                    card.appendChild(creditsDuration);
-                    card.appendChild(status);
-                    card.appendChild(enrolled);
+                    const course = e.course || {};
+
+                    const card = document.createElement("div");
+                    card.className = "course-card";
+
+                    card.innerHTML = `
+                        <h4>${safeValue(course.title, "Untitled Course")}</h4>
+                        <p>${safeValue(course.description, "No description available.")}</p>
+                        <p><b>Credits:</b> ${safeValue(course.credits, "-")} | <b>Duration:</b> ${safeValue(course.duration, "-")} weeks</p>
+                        <p><b>Enrolled:</b> ${e.enrolledAt ? new Date(e.enrolledAt).toLocaleDateString() : "-"}</p>
+                        <span class="status-chip">${safeValue(e.status, "ACTIVE")}</span>
+                    `;
+
                     grid.appendChild(card);
                 });
             }
         } catch (err) {
             console.error("Error loading enrolments", err);
         } finally {
-            loadCourses(); // Load courses even if enrolments fail
+            loadCourses();
         }
     }
 
     async function loadCourses() {
         try {
             const res = await fetch(`/api/courses`);
-            const grid = document.getElementById('coursesGrid');
-            
+            const grid = document.getElementById("coursesGrid");
+
             if (!res.ok) {
-                grid.innerHTML = "<p>Error loading courses.</p>";
+                grid.innerHTML = `<p class="empty-message">Error loading courses.</p>`;
                 return;
             }
+
             const courses = await res.json();
-            
+            document.getElementById("courseCount").innerText = courses.length;
+
             if (courses.length === 0) {
-                grid.innerHTML = "<p>No courses available.</p>";
+                grid.innerHTML = `<p class="empty-message">No courses available.</p>`;
             } else {
                 grid.innerHTML = "";
+
                 courses.forEach(c => {
                     const isEnrolled = myEnrolledCourseIds.includes(c.id);
-                    const card = document.createElement('div');
-                    card.className = 'course-card';
-                    const title = document.createElement('h4');
-                    title.textContent = c.title;
-                    const description = document.createElement('p');
-                    description.textContent = c.description;
-                    const creditsDuration = document.createElement('p');
-                    const creditsLabel = document.createElement('b');
-                    creditsLabel.textContent = 'Credits:';
-                    creditsDuration.appendChild(creditsLabel);
-                    creditsDuration.appendChild(document.createTextNode(` ${c.credits} | `));
-                    const durationLabel = document.createElement('b');
-                    durationLabel.textContent = 'Duration:';
-                    creditsDuration.appendChild(durationLabel);
-                    creditsDuration.appendChild(document.createTextNode(` ${c.duration} weeks`));
-                    
-                    const btn = document.createElement('button');
-                    btn.className = 'enrol-btn';
-                    btn.textContent = isEnrolled ? 'Enrolled' : 'Enrol Now';
+
+                    const card = document.createElement("div");
+                    card.className = "course-card";
+
+                    card.innerHTML = `
+                        <h4>${safeValue(c.title, "Untitled Course")}</h4>
+                        <p>${safeValue(c.description, "No description available.")}</p>
+                        <p><b>Credits:</b> ${safeValue(c.credits, "-")} | <b>Duration:</b> ${safeValue(c.duration, "-")} weeks</p>
+                    `;
+
+                    const btn = document.createElement("button");
+                    btn.className = "enrol-btn";
+                    btn.textContent = isEnrolled ? "Enrolled" : "Enrol Now";
+
                     if (isEnrolled) {
                         btn.disabled = true;
                     } else {
                         btn.onclick = () => enrol(c.id);
                     }
 
-                    card.appendChild(title);
-                    card.appendChild(description);
-                    card.appendChild(creditsDuration);
                     card.appendChild(btn);
                     grid.appendChild(card);
                 });
@@ -489,15 +1114,16 @@
     async function enrol(courseId) {
         try {
             const payload = { studentId: user.id, courseId: courseId };
+
             const res = await fetch(`/api/enrolments`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload)
             });
-            
+
             if (res.ok) {
                 alert("Successfully enrolled!");
-                loadEnrolments(); // Refresh lists
+                loadEnrolments();
             } else {
                 alert("Failed to enrol.");
             }
@@ -506,20 +1132,17 @@
         }
     }
 
-    // Load data on start
-    if (user) {
-        loadEnrolments();
-    }
-    // ----------------------------------
-
-    // PROFILE MODAL
     function details() {
         profileModal.style.display = "block";
 
-        pName.innerText = user.name;
-        pEmail.innerText = user.email;
-        pPhone.innerText = user.phone;
-        pAddress.innerText = user.address;
+        pName.innerText = safeValue(user.name, "Student");
+        pEmail.innerText = safeValue(user.email);
+        pPhone.innerText = safeValue(user.phone);
+        pAddress.innerText = safeValue(user.address);
+        pStudentId.innerText = safeValue(user.id, "-");
+
+        graduationStatus.innerText = "Not checked";
+        graduationStatus.className = "graduation-status";
     }
 
     function closeProfile() {
@@ -531,14 +1154,17 @@
         updateUser();
     }
 
-    // outside click
     window.onclick = function(e) {
-        if (!e.target.closest('.user-menu')) {
+        if (!e.target.closest(".user-menu")) {
             dropdown.style.display = "none";
         }
 
         if (e.target === modal) closeModal();
         if (e.target === profileModal) closeProfile();
+    };
+
+    if (user) {
+        loadEnrolments();
     }
 </script>
 

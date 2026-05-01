@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/students")
@@ -23,17 +22,19 @@ public class StudentController {
     @Value("${finance.service.url}")
     private String financeServiceUrl;
 
+    @Value("${library.service.url}")
+    private String libraryServiceUrl;
+
     public StudentController(StudentService studentService, RestTemplate restTemplate) {
         this.studentService = studentService;
         this.restTemplate = restTemplate;
     }
-    //For register user
+
     @PostMapping("/register")
     public StudentEntities register(@RequestBody StudentEntities student) {
         return studentService.register(student);
     }
 
-    // For login
     @PostMapping("/login")
     public StudentEntities login(@RequestBody StudentEntities student) {
         return studentService.login(student.getEmail(), student.getPassword())
@@ -51,32 +52,54 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/graduation")
-    public ResponseEntity<?> checkGraduation(
-            @PathVariable String id) {
+    public ResponseEntity<?> checkGraduation(@PathVariable String id) {
+        Map<String, Object> result = new HashMap<>();
+
+        boolean hasOutstandingBalance = false;
+        boolean hasBorrowedBooks = false;
+
         try {
             String financeUrl = financeServiceUrl + "/accounts/student/" + id;
-            Map response = restTemplate.getForObject(financeUrl, Map.class);
+            Map financeResponse = restTemplate.getForObject(financeUrl, Map.class);
 
-            boolean hasOutstanding = (boolean) response.get("hasOutstandingBalance");
-
-            Map<String, Object> result = new HashMap<>();
-            result.put("studentId", id);
-            result.put("hasOutstandingBalance", hasOutstanding);
-            result.put("eligible", !hasOutstanding);
-            result.put("message", hasOutstanding
-                    ? "Not eligible - outstanding invoices exist"
-                    : "Eligible to graduate");
-
-            return ResponseEntity.ok(result);
+            if (financeResponse != null && financeResponse.get("hasOutstandingBalance") != null) {
+                hasOutstandingBalance = Boolean.TRUE.equals(financeResponse.get("hasOutstandingBalance"));
+            }
         } catch (Exception e) {
-            return ResponseEntity.status(404)
-                    .body("Could not check graduation eligibility: " + e.getMessage());
+            result.put("financeWarning", "Finance check failed: " + e.getMessage());
+            hasOutstandingBalance = true;
         }
-    }
 
-//    @GetMapping
-//    public List<StudentEntities> getAllStudents() {
-//
-//        return studentService.getAll();
-//    }
+        try {
+            String libraryUrl = libraryServiceUrl + "/api/library/loans/student/" + id;
+            List<Map<String, Object>> loans = restTemplate.getForObject(libraryUrl, List.class);
+
+            if (loans != null) {
+                hasBorrowedBooks = loans.stream()
+                        .anyMatch(loan -> "BORROWED".equals(String.valueOf(loan.get("status"))));
+            }
+        } catch (Exception e) {
+            result.put("libraryWarning", "Library check failed: " + e.getMessage());
+            hasBorrowedBooks = true;
+        }
+
+        boolean eligible = !hasOutstandingBalance && !hasBorrowedBooks;
+
+        result.put("studentId", id);
+        result.put("hasOutstandingBalance", hasOutstandingBalance);
+        result.put("hasBorrowedBooks", hasBorrowedBooks);
+        result.put("eligible", eligible);
+
+        if (eligible) {
+            result.put("message", "Eligible to graduate");
+        } else if (hasOutstandingBalance && hasBorrowedBooks) {
+            result.put("message", "Not eligible - pending payment and borrowed books exist");
+        } else if (hasOutstandingBalance) {
+            result.put("message", "Not eligible - pending payment exists");
+        } else {
+            result.put("message", "Not eligible - borrowed books must be returned");
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }

@@ -2,192 +2,405 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+        * {
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-        header {
-            background-color: #4da6ff;
+
+        body {
+            min-height: 100vh;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
             color: white;
-            width: 100%;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 22px 40px;
         }
+
+        .navbar h1 {
+            font-size: 28px;
+        }
+
+        .navbar p {
+            margin-top: 6px;
+            opacity: 0.9;
+        }
+
         .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-top: 30px;
-            width: 80%;
-            max-width: 900px;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
-        .search-box {
+
+        .search-card {
+            background: white;
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .search-row {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
         }
-        input[type="text"] {
+
+        input {
             flex: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
+            padding: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
         }
+
         button {
-            padding: 10px 20px;
-            background-color: #4da6ff;
-            color: white;
+            padding: 14px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
+            font-weight: bold;
+            background: #2563eb;
+            color: white;
         }
+
         button:hover {
-            background-color: #3580cc;
+            background: #1d4ed8;
         }
-        .account-details {
-            margin-bottom: 30px;
-            padding: 15px;
-            border-left: 5px solid #4da6ff;
-            background-color: #e9f4ff;
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
         }
-        .status-yes { color: #d9534f; font-weight: bold; }
-        .status-no { color: #5cb85c; font-weight: bold; }
+
+        .hidden {
+            display: none;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .stat {
+            background: white;
+            padding: 22px;
+            border-radius: 16px;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.07);
+        }
+
+        .stat h3 {
+            font-size: 28px;
+            color: #2563eb;
+        }
+
+        .stat p {
+            margin-top: 6px;
+            color: #6b7280;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 14px;
         }
+
         th, td {
-            padding: 12px;
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
             text-align: left;
-            border-bottom: 1px solid #eee;
         }
+
         th {
-            background-color: #f8f9fa;
+            background: #f8fafc;
+            color: #374151;
         }
+
+        .badge {
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .OUTSTANDING {
+            background: #f59e0b;
+        }
+
+        .PAID {
+            background: #16a34a;
+        }
+
+        .CANCELLED {
+            background: #dc2626;
+        }
+
         .pay-btn {
-            background-color: #5cb85c;
-            padding: 5px 10px;
-            font-size: 14px;
+            background: #16a34a;
+            padding: 8px 12px;
+            font-size: 13px;
         }
-        .pay-btn:hover {
-            background-color: #449d44;
+
+        .message {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .success {
+            background: #ecfdf5;
+            color: #15803d;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        @media (max-width: 650px) {
+            .search-row {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            table {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
 <body>
 
-<header>
+<div class="navbar">
     <h1>Finance Portal</h1>
-</header>
+    <p>View student finance account, invoices, outstanding balance, and payment status.</p>
+</div>
 
 <div class="container">
-    <div class="search-box">
-        <input type="text" id="studentId" placeholder="Enter Student ID (e.g. test-student-001)">
-        <button onclick="searchStudent()">Search</button>
-    </div>
 
-    <div id="resultArea" style="display: none;">
-        <div class="account-details" id="accountInfo">
-            <!-- Account Info Here -->
+    <div class="search-card">
+        <h2>Search Student Finance Account</h2>
+        <p style="margin: 8px 0 18px; color:#6b7280;">
+            Enter Student ID to view finance details.
+        </p>
+
+        <div class="search-row">
+            <input id="studentIdInput" placeholder="Enter Student ID">
+            <button onclick="searchAccount()">Search</button>
         </div>
 
-        <h3>Invoices</h3>
-        <table id="invoiceTable">
-            <thead>
+        <div id="messageBox" class="message"></div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+
+        <div class="stats">
+            <div class="stat">
+                <h3 id="totalInvoices">0</h3>
+                <p>Total Invoices</p>
+            </div>
+
+            <div class="stat">
+                <h3 id="outstandingInvoices">0</h3>
+                <p>Outstanding Invoices</p>
+            </div>
+
+            <div class="stat">
+                <h3 id="paidInvoices">0</h3>
+                <p>Paid Invoices</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Account Details</h2>
+            <p><b>Account ID:</b> <span id="accountId"></span></p>
+            <p><b>Student ID:</b> <span id="studentIdDisplay"></span></p>
+            <p><b>Outstanding Balance:</b> <span id="outstandingStatus"></span></p>
+            <p><b>Created At:</b> <span id="createdAt"></span></p>
+        </div>
+
+        <div class="card">
+            <h2>Invoices</h2>
+            <table>
+                <thead>
                 <tr>
                     <th>Reference</th>
-                    <th>Amount</th>
                     <th>Type</th>
+                    <th>Amount</th>
                     <th>Due Date</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
-            </thead>
-            <tbody id="invoiceList">
-                <!-- Invoices Here -->
-            </tbody>
-        </table>
+                </thead>
+                <tbody id="invoiceTable"></tbody>
+            </table>
+        </div>
+
     </div>
 </div>
 
 <script>
-    async function searchStudent() {
-        const studentId = document.getElementById('studentId').value;
-        if (!studentId) return;
+    let currentStudentId = "";
+
+    function showMessage(text, type) {
+        const box = document.getElementById("messageBox");
+        box.innerText = text;
+        box.className = "message " + type;
+        box.style.display = "block";
+    }
+
+    function hideMessage() {
+        document.getElementById("messageBox").style.display = "none";
+    }
+
+    async function searchAccount() {
+        const studentId = document.getElementById("studentIdInput").value.trim();
+
+        if (!studentId) {
+            showMessage("Please enter Student ID.", "error");
+            return;
+        }
+
+        currentStudentId = studentId;
+        hideMessage();
 
         try {
-            const accRes = await fetch(`http://localhost:8082/accounts/student/${studentId}`);
-            if (!accRes.ok) throw new Error('Student account not found');
-            const account = await accRes.json();
+            let accountRes = await fetch(`/accounts/student/${studentId}`);
 
-            const invRes = await fetch(`http://localhost:8082/invoices/student/${studentId}`);
-            const invoices = await invRes.json();
+            if (accountRes.status === 404) {
+                const createRes = await fetch(`/accounts/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ studentId: studentId })
+                });
 
-            displayAccount(account, invoices.length);
-            displayInvoices(invoices);
-            document.getElementById('resultArea').style.display = 'block';
-        } catch (err) {
-            alert(err.message);
-            document.getElementById('resultArea').style.display = 'none';
+                if (!createRes.ok) {
+                    showMessage("Student finance account could not be created.", "error");
+                    return;
+                }
+
+                accountRes = await fetch(`/accounts/student/${studentId}`);
+            }
+
+            if (!accountRes.ok) {
+                showMessage("Student account not found.", "error");
+                return;
+            }
+
+            const account = await accountRes.json();
+
+            document.getElementById("dashboard").classList.remove("hidden");
+
+            document.getElementById("accountId").innerText = account.id || "-";
+            document.getElementById("studentIdDisplay").innerText = account.studentId || studentId;
+            document.getElementById("outstandingStatus").innerText =
+                account.hasOutstandingBalance ? "Yes" : "No";
+            document.getElementById("createdAt").innerText =
+                account.createdAt ? new Date(account.createdAt).toLocaleString() : "-";
+
+            await loadInvoices(studentId);
+
+            showMessage("Finance account loaded successfully.", "success");
+
+        } catch (error) {
+            console.error(error);
+            showMessage("Could not connect to finance service.", "error");
         }
     }
 
-    function displayAccount(account, invoiceCount) {
-        const info = document.getElementById('accountInfo');
-        const statusClass = account.hasOutstandingBalance ? 'status-yes' : 'status-no';
-        const statusText = account.hasOutstandingBalance ? 'YES' : 'NO';
-
-        info.innerHTML = `
-            <p><strong>Student ID:</strong> ${account.studentId}</p>
-            <p><strong>Number of Invoices:</strong> ${invoiceCount}</p>
-            <p><strong>Outstanding Balance:</strong> <span class="${statusClass}">${statusText}</span></p>
-        `;
-    }
-
-    function displayInvoices(invoices) {
-        const list = document.getElementById('invoiceList');
-        list.innerHTML = '';
-
-        invoices.forEach(inv => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${inv.reference}</td>
-                <td>£${inv.amount.toFixed(2)}</td>
-                <td>${inv.type}</td>
-                <td>${inv.dueDate}</td>
-                <td>${inv.status}</td>
-                <td>
-                    ${inv.status === 'OUTSTANDING' 
-                        ? `<button class="pay-btn" onclick="payInvoice('${inv.id}')">Pay</button>` 
-                        : '-'}
-                </td>
-            `;
-            list.appendChild(row);
-        });
-    }
-
-    async function payInvoice(id) {
+    async function loadInvoices(studentId) {
         try {
-            const res = await fetch(`http://localhost:8082/invoices/${id}/pay`, { method: 'PUT' });
-            if (!res.ok) throw new Error('Payment failed');
-            alert('Invoice paid successfully!');
-            searchStudent();
-        } catch (err) {
-            alert(err.message);
+            const res = await fetch(`/invoices/student/${studentId}`);
+
+            if (!res.ok) {
+                document.getElementById("invoiceTable").innerHTML =
+                    `<tr><td colspan="6">No invoices found.</td></tr>`;
+                return;
+            }
+
+            const invoices = await res.json();
+
+            document.getElementById("totalInvoices").innerText = invoices.length;
+            document.getElementById("outstandingInvoices").innerText =
+                invoices.filter(i => i.status === "OUTSTANDING").length;
+            document.getElementById("paidInvoices").innerText =
+                invoices.filter(i => i.status === "PAID").length;
+
+            const table = document.getElementById("invoiceTable");
+            table.innerHTML = "";
+
+            if (invoices.length === 0) {
+                table.innerHTML = `<tr><td colspan="6">No invoices available.</td></tr>`;
+                return;
+            }
+
+            invoices.forEach(invoice => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${invoice.reference || "-"}</td>
+                        <td>${invoice.type || "-"}</td>
+                        <td>£${invoice.amount || 0}</td>
+                        <td>${invoice.dueDate || "-"}</td>
+                        <td><span class="badge ${invoice.status}">${invoice.status}</span></td>
+                        <td>
+                            ${
+                                invoice.status === "OUTSTANDING"
+                                ? `<button class="pay-btn" onclick="payInvoice('${invoice.id}')">Pay</button>`
+                                : "-"
+                            }
+                        </td>
+                    </tr>
+                `;
+            });
+
+        } catch (error) {
+            console.error(error);
         }
     }
+
+    async function payInvoice(invoiceId) {
+        try {
+            const res = await fetch(`/invoices/${invoiceId}/pay`, {
+                method: "PUT"
+            });
+
+            if (res.ok) {
+                showMessage("Invoice paid successfully.", "success");
+                await searchAccount();
+            } else {
+                showMessage("Failed to pay invoice.", "error");
+            }
+
+        } catch (error) {
+            console.error(error);
+            showMessage("Could not connect to finance service.", "error");
+        }
+    }
+
+    window.onload = function () {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user && user.id) {
+            document.getElementById("studentIdInput").value = user.id;
+        }
+    };
 </script>
 
 </body>
