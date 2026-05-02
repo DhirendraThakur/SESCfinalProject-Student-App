@@ -255,6 +255,12 @@
             transform: translateY(-1px);
         }
 
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .error {
             margin-top: 14px;
             color: #dc2626;
@@ -325,25 +331,25 @@
             <div class="hero">
                 <h1>Welcome back to your student portal</h1>
                 <p>
-                    Sign in to access your dashboard, manage your profile, explore services,
-                    and stay connected with your academic journey.
+                    Sign in securely to access your dashboard, manage your profile,
+                    explore services, and stay connected with your academic journey.
                 </p>
             </div>
 
             <div class="benefits">
                 <div class="benefit">
-                    <h4>Secure access</h4>
-                    <p>Quick and reliable login to your personalized academic dashboard.</p>
+                    <h4>JWT Secure Login</h4>
+                    <p>Your session is protected using token-based authentication.</p>
+                </div>
+
+                <div class="benefit">
+                    <h4>Role Based Access</h4>
+                    <p>Students and admins are redirected to their correct workspace.</p>
                 </div>
 
                 <div class="benefit">
                     <h4>Modern student workspace</h4>
                     <p>Manage profile details, enrolments, and student services in one place.</p>
-                </div>
-
-                <div class="benefit">
-                    <h4>Fast and responsive</h4>
-                    <p>Clean, responsive design for a smooth experience across devices.</p>
                 </div>
             </div>
         </div>
@@ -384,7 +390,7 @@
             </div>
         </div>
 
-        <button class="submit-btn" onclick="login()">Login</button>
+        <button class="submit-btn" id="loginBtn" onclick="login()">Login</button>
 
         <div class="error" id="errorMsg"></div>
 
@@ -399,10 +405,29 @@
         window.location.href = "index.html";
     }
 
+    function saveUser(data) {
+        const user = {
+            id: data.id || "",
+            name: data.name || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            address: data.address || "",
+            role: data.role || "STUDENT",
+            token: data.token || ""
+        };
+
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", user.token);
+        localStorage.setItem("role", user.role);
+
+        return user;
+    }
+
     async function login() {
         const emailValue = document.getElementById("email").value.trim();
         const passwordValue = document.getElementById("password").value.trim();
         const errorMsg = document.getElementById("errorMsg");
+        const loginBtn = document.getElementById("loginBtn");
 
         errorMsg.innerText = "";
 
@@ -411,10 +436,15 @@
             return;
         }
 
+        loginBtn.disabled = true;
+        loginBtn.innerText = "Logging in...";
+
         try {
-            const res = await fetch("http://localhost:8080/api/students/login", {
+            const res = await fetch("http://localhost:8080/api/auth/login", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     email: emailValue,
                     password: passwordValue
@@ -426,26 +456,12 @@
             }
 
             const data = await res.json();
-            console.log("Login response from backend:", data);
 
-            const user = {
-                id: data.id || "",
-                name: data.name || "",
-                email: data.email || "",
-                phone: data.phone || "",
-                address: data.address || "",
-                course: data.course || "",
-                role: data.role || "STUDENT"
-            };
-
-            if (!user.name) {
-                errorMsg.innerText = "Login succeeded, but user name is missing from backend response.";
-                console.log("Saved user object problem:", user);
-                return;
+            if (!data.token) {
+                throw new Error("Token missing from login response");
             }
 
-            localStorage.setItem("user", JSON.stringify(user));
-            console.log("Saved user object:", user);
+            const user = saveUser(data);
 
             if (user.role === "ADMIN") {
                 window.location.href = "admin.html";
@@ -456,8 +472,17 @@
         } catch (error) {
             console.error("Login error:", error);
             errorMsg.innerText = "Invalid email or password.";
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.innerText = "Login";
         }
     }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            login();
+        }
+    });
 </script>
 
 </body>

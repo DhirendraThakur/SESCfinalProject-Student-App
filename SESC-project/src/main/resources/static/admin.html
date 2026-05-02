@@ -9,11 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --primary: #2563eb;
@@ -24,8 +20,6 @@
             --dark: #0f172a;
             --text: #1f2937;
             --muted: #64748b;
-            --soft: #f8fafc;
-            --white: #ffffff;
             --border: #e2e8f0;
             --shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
         }
@@ -50,7 +44,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: 10px 0 30px rgba(15, 23, 42, 0.18);
         }
 
         .brand {
@@ -72,15 +65,8 @@
             font-size: 22px;
         }
 
-        .brand h2 {
-            font-size: 24px;
-            margin-bottom: 3px;
-        }
-
-        .brand p {
-            font-size: 12px;
-            opacity: 0.75;
-        }
+        .brand h2 { font-size: 24px; margin-bottom: 3px; }
+        .brand p { font-size: 12px; opacity: 0.75; }
 
         .admin-box {
             background: rgba(255,255,255,0.08);
@@ -103,20 +89,7 @@
             justify-content: center;
         }
 
-        .admin-box h4 {
-            font-size: 15px;
-            margin-bottom: 4px;
-        }
-
-        .admin-box p {
-            font-size: 12px;
-            opacity: 0.75;
-        }
-
-        .nav {
-            display: grid;
-            gap: 12px;
-        }
+        .nav { display: grid; gap: 12px; }
 
         .nav button {
             width: 100%;
@@ -131,13 +104,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: 0.25s;
         }
 
         .nav button:hover,
         .nav button.active {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            transform: translateX(3px);
+        }
+
+        .logout-btn {
+            margin-top: 18px;
+            background: rgba(220,38,38,0.85) !important;
         }
 
         .sidebar-footer {
@@ -200,19 +176,6 @@
             border-radius: 24px;
             padding: 24px;
             box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::after {
-            content: "";
-            position: absolute;
-            right: -26px;
-            top: -26px;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: rgba(37,99,235,0.06);
         }
 
         .stat-icon {
@@ -271,25 +234,13 @@
             font-size: 14px;
         }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
         .btn {
             padding: 10px 14px;
             border: none;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
-            transition: 0.22s;
             font-family: inherit;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-            opacity: 0.95;
         }
 
         .btn-primary {
@@ -338,11 +289,6 @@
             color: #334155;
             font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        tr:hover td {
-            background: #fafcff;
         }
 
         .badge {
@@ -354,21 +300,9 @@
             font-weight: 800;
         }
 
-        .ACTIVE, .RETURNED, .available {
-            background: #16a34a;
-        }
-
-        .DROPPED, .issued {
-            background: #dc2626;
-        }
-
-        .BORROWED {
-            background: #f59e0b;
-        }
-
-        .COMPLETED {
-            background: #64748b;
-        }
+        .ACTIVE { background: #16a34a; }
+        .COMPLETED { background: #64748b; }
+        .DROPPED { background: #dc2626; }
 
         .modal {
             display: none;
@@ -387,7 +321,6 @@
             margin: 6% auto;
             padding: 28px;
             border-radius: 24px;
-            box-shadow: 0 24px 50px rgba(0,0,0,0.20);
         }
 
         .modal-content h3 {
@@ -412,11 +345,6 @@
             border-radius: 14px;
             outline: none;
             font-family: inherit;
-        }
-
-        input:focus {
-            border-color: #93c5fd;
-            box-shadow: 0 0 0 4px rgba(37,99,235,0.10);
         }
 
         .modal-actions {
@@ -485,6 +413,9 @@
             <button id="enrolmentsBtn" onclick="showSection('enrolments')">
                 <i class="fa-solid fa-list-check"></i> Enrolments
             </button>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
         </div>
     </div>
 
@@ -531,11 +462,9 @@
                 <h3>Student Management</h3>
                 <p>View, update, and remove student records.</p>
             </div>
-            <div class="actions">
-                <button class="btn btn-primary" onclick="loadStudents()">
-                    <i class="fa-solid fa-rotate"></i> Refresh
-                </button>
-            </div>
+            <button class="btn btn-primary" onclick="loadStudents()">
+                <i class="fa-solid fa-rotate"></i> Refresh
+            </button>
         </div>
 
         <div class="table-wrapper">
@@ -549,11 +478,9 @@
                 <h3>Course Management</h3>
                 <p>Create, update, and manage academic courses.</p>
             </div>
-            <div class="actions">
-                <button class="btn btn-primary" onclick="openCourseModal()">
-                    <i class="fa-solid fa-plus"></i> Add Course
-                </button>
-            </div>
+            <button class="btn btn-primary" onclick="openCourseModal()">
+                <i class="fa-solid fa-plus"></i> Add Course
+            </button>
         </div>
 
         <div class="table-wrapper">
@@ -567,11 +494,9 @@
                 <h3>Enrolment Records</h3>
                 <p>Track student course enrolments and statuses.</p>
             </div>
-            <div class="actions">
-                <button class="btn btn-primary" onclick="loadEnrolments()">
-                    <i class="fa-solid fa-rotate"></i> Refresh
-                </button>
-            </div>
+            <button class="btn btn-primary" onclick="loadEnrolments()">
+                <i class="fa-solid fa-rotate"></i> Refresh
+            </button>
         </div>
 
         <div class="table-wrapper">
@@ -585,16 +510,16 @@
         <h3>Edit Student</h3>
 
         <label>Name</label>
-        <input id="sName" placeholder="Name">
+        <input id="sName">
 
         <label>Email</label>
-        <input id="sEmail" placeholder="Email">
+        <input id="sEmail">
 
         <label>Phone</label>
-        <input id="sPhone" placeholder="Phone">
+        <input id="sPhone">
 
         <label>Address</label>
-        <input id="sAddress" placeholder="Address">
+        <input id="sAddress">
 
         <div class="modal-actions">
             <button class="btn btn-primary" onclick="updateStudent()">Update</button>
@@ -608,16 +533,16 @@
         <h3>Add Course</h3>
 
         <label>Title</label>
-        <input id="cTitle" placeholder="Title">
+        <input id="cTitle">
 
         <label>Description</label>
-        <input id="cDesc" placeholder="Description">
+        <input id="cDesc">
 
         <label>Credits</label>
-        <input id="cCredits" type="number" placeholder="Credits">
+        <input id="cCredits" type="number">
 
         <label>Duration</label>
-        <input id="cDuration" type="number" placeholder="Duration in weeks">
+        <input id="cDuration" type="number">
 
         <div class="modal-actions">
             <button class="btn btn-primary" onclick="saveCourse()">Save</button>
@@ -631,16 +556,16 @@
         <h3>Edit Course</h3>
 
         <label>Title</label>
-        <input id="ecTitle" placeholder="Title">
+        <input id="ecTitle">
 
         <label>Description</label>
-        <input id="ecDesc" placeholder="Description">
+        <input id="ecDesc">
 
         <label>Credits</label>
-        <input id="ecCredits" type="number" placeholder="Credits">
+        <input id="ecCredits" type="number">
 
         <label>Duration</label>
-        <input id="ecDuration" type="number" placeholder="Duration in weeks">
+        <input id="ecDuration" type="number">
 
         <div class="modal-actions">
             <button class="btn btn-primary" onclick="updateCourse()">Update</button>
@@ -650,39 +575,30 @@
 </div>
 
 <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.token || user.role !== "ADMIN") {
+        alert("Admin access required.");
+        window.location.href = "login.html";
+    }
+
     let studentEditId;
     let courseEditId;
-
-    const studentsSection = document.getElementById("students");
-    const coursesSection = document.getElementById("courses");
-    const enrolmentsSection = document.getElementById("enrolments");
 
     const studentTable = document.getElementById("studentTable");
     const courseTable = document.getElementById("courseTable");
     const enrolmentTable = document.getElementById("enrolmentTable");
 
-    const studentEditModal = document.getElementById("studentEditModal");
-    const courseModal = document.getElementById("courseModal");
-    const courseEditModal = document.getElementById("courseEditModal");
-
-    function setActiveNav(id) {
-        document.getElementById("studentsBtn").classList.remove("active");
-        document.getElementById("coursesBtn").classList.remove("active");
-        document.getElementById("enrolmentsBtn").classList.remove("active");
-        document.getElementById(id + "Btn").classList.add("active");
+    function authHeaders() {
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + user.token
+        };
     }
 
-    function showSection(id) {
-        studentsSection.style.display = "none";
-        coursesSection.style.display = "none";
-        enrolmentsSection.style.display = "none";
-
-        document.getElementById(id).style.display = "block";
-        setActiveNav(id);
-
-        if (id === "students") loadStudents();
-        if (id === "courses") loadCourses();
-        if (id === "enrolments") loadEnrolments();
+    function logout() {
+        localStorage.clear();
+        window.location.href = "login.html";
     }
 
     function safeText(value, fallback = "-") {
@@ -693,49 +609,97 @@
         return String(value || "").replace(/'/g, "\\'").replace(/"/g, "&quot;");
     }
 
-    function loadStudents() {
-        fetch("/api/admin/students")
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("studentCount").innerText = data.length;
-
-                if (!data.length) {
-                    studentTable.innerHTML = `<tr><td class="empty-state">No students found.</td></tr>`;
-                    return;
-                }
-
-                studentTable.innerHTML = `
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>Action</th>
-                    </tr>
-                `;
-
-                data.forEach(s => {
-                    studentTable.innerHTML += `
-                        <tr>
-                            <td>${safeText(s.name, '<span style="color:#dc2626;font-weight:700;">Missing Name</span>')}</td>
-                            <td>${safeText(s.email)}</td>
-                            <td>${safeText(s.phone)}</td>
-                            <td>${safeText(s.address)}</td>
-                            <td>
-                                <button class="btn btn-warning" onclick="editStudent('${s.id}','${escapeText(s.name)}','${escapeText(s.email)}','${escapeText(s.phone)}','${escapeText(s.address)}')">Edit</button>
-                                <button class="btn btn-danger" onclick="deleteStudent('${s.id}')">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            });
+    function setActiveNav(id) {
+        document.getElementById("studentsBtn").classList.remove("active");
+        document.getElementById("coursesBtn").classList.remove("active");
+        document.getElementById("enrolmentsBtn").classList.remove("active");
+        document.getElementById(id + "Btn").classList.add("active");
     }
 
-    function deleteStudent(id) {
+    function showSection(id) {
+        document.getElementById("students").style.display = "none";
+        document.getElementById("courses").style.display = "none";
+        document.getElementById("enrolments").style.display = "none";
+
+        document.getElementById(id).style.display = "block";
+        setActiveNav(id);
+
+        if (id === "students") loadStudents();
+        if (id === "courses") loadCourses();
+        if (id === "enrolments") loadEnrolments();
+    }
+
+    async function fetchJson(url, options = {}) {
+        const res = await fetch(url, {
+            ...options,
+            headers: {
+                ...authHeaders(),
+                ...(options.headers || {})
+            }
+        });
+
+        if (!res.ok) {
+            throw new Error(await res.text());
+        }
+
+        return await res.json();
+    }
+
+    async function loadStudents() {
+        try {
+            const data = await fetchJson("/api/admin/students");
+
+            document.getElementById("studentCount").innerText = Array.isArray(data) ? data.length : 0;
+
+            if (!Array.isArray(data) || data.length === 0) {
+                studentTable.innerHTML = `<tr><td class="empty-state">No students found.</td></tr>`;
+                return;
+            }
+
+            studentTable.innerHTML = `
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            `;
+
+            data.forEach(s => {
+                studentTable.innerHTML += `
+                    <tr>
+                        <td>${safeText(s.name)}</td>
+                        <td>${safeText(s.email)}</td>
+                        <td>${safeText(s.phone)}</td>
+                        <td>${safeText(s.address)}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editStudent('${s.id}','${escapeText(s.name)}','${escapeText(s.email)}','${escapeText(s.phone)}','${escapeText(s.address)}')">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteStudent('${s.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("studentCount").innerText = 0;
+            studentTable.innerHTML = `<tr><td class="empty-state">Failed to load students. Check token or admin role.</td></tr>`;
+        }
+    }
+
+    async function deleteStudent(id) {
         if (!confirm("Delete this student?")) return;
 
-        fetch(`/api/admin/students/${id}`, { method: "DELETE" })
-            .then(() => loadStudents());
+        try {
+            await fetch(`/api/admin/students/${id}`, {
+                method: "DELETE",
+                headers: authHeaders()
+            });
+            loadStudents();
+        } catch (err) {
+            alert("Failed to delete student.");
+        }
     }
 
     function editStudent(id, name, email, phone, address) {
@@ -751,20 +715,24 @@
         studentEditModal.style.display = "none";
     }
 
-    function updateStudent() {
-        fetch(`/api/admin/students/${studentEditId}`, {
-            method: "PUT",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                name: sName.value,
-                email: sEmail.value,
-                phone: sPhone.value,
-                address: sAddress.value
-            })
-        }).then(() => {
+    async function updateStudent() {
+        try {
+            await fetch(`/api/admin/students/${studentEditId}`, {
+                method: "PUT",
+                headers: authHeaders(),
+                body: JSON.stringify({
+                    name: sName.value,
+                    email: sEmail.value,
+                    phone: sPhone.value,
+                    address: sAddress.value
+                })
+            });
+
             closeStudentModal();
             loadStudents();
-        });
+        } catch (err) {
+            alert("Failed to update student.");
+        }
     }
 
     function openCourseModal() {
@@ -779,65 +747,81 @@
         courseModal.style.display = "none";
     }
 
-    function saveCourse() {
-        fetch("/api/courses", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                title: cTitle.value,
-                description: cDesc.value,
-                credits: parseInt(cCredits.value) || 0,
-                duration: parseInt(cDuration.value) || 0
-            })
-        }).then(() => {
+    async function saveCourse() {
+        try {
+            await fetch("/api/courses", {
+                method: "POST",
+                headers: authHeaders(),
+                body: JSON.stringify({
+                    title: cTitle.value,
+                    description: cDesc.value,
+                    credits: parseInt(cCredits.value) || 0,
+                    duration: parseInt(cDuration.value) || 0
+                })
+            });
+
             closeCourseModal();
             loadCourses();
-        });
+        } catch (err) {
+            alert("Failed to save course.");
+        }
     }
 
-    function loadCourses() {
-        fetch("/api/courses")
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("courseCount").innerText = data.length;
+    async function loadCourses() {
+        try {
+            const data = await fetchJson("/api/courses");
 
-                if (!data.length) {
-                    courseTable.innerHTML = `<tr><td class="empty-state">No courses found.</td></tr>`;
-                    return;
-                }
+            document.getElementById("courseCount").innerText = Array.isArray(data) ? data.length : 0;
 
-                courseTable.innerHTML = `
+            if (!Array.isArray(data) || data.length === 0) {
+                courseTable.innerHTML = `<tr><td class="empty-state">No courses found.</td></tr>`;
+                return;
+            }
+
+            courseTable.innerHTML = `
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Credits</th>
+                    <th>Duration</th>
+                    <th>Actions</th>
+                </tr>
+            `;
+
+            data.forEach(c => {
+                courseTable.innerHTML += `
                     <tr>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Credits</th>
-                        <th>Duration</th>
-                        <th>Actions</th>
+                        <td>${safeText(c.title)}</td>
+                        <td>${safeText(c.description)}</td>
+                        <td>${safeText(c.credits, 0)}</td>
+                        <td>${safeText(c.duration, 0)} weeks</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editCourse('${c.id}','${escapeText(c.title)}','${escapeText(c.description)}',${c.credits || 0},${c.duration || 0})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteCourse('${c.id}')">Delete</button>
+                        </td>
                     </tr>
                 `;
-
-                data.forEach(c => {
-                    courseTable.innerHTML += `
-                        <tr>
-                            <td>${safeText(c.title)}</td>
-                            <td>${safeText(c.description)}</td>
-                            <td>${safeText(c.credits, 0)}</td>
-                            <td>${safeText(c.duration, 0)} weeks</td>
-                            <td>
-                                <button class="btn btn-warning" onclick="editCourse('${c.id}','${escapeText(c.title)}','${escapeText(c.description)}',${c.credits || 0},${c.duration || 0})">Edit</button>
-                                <button class="btn btn-danger" onclick="deleteCourse('${c.id}')">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                });
             });
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("courseCount").innerText = 0;
+            courseTable.innerHTML = `<tr><td class="empty-state">Failed to load courses.</td></tr>`;
+        }
     }
 
-    function deleteCourse(id) {
+    async function deleteCourse(id) {
         if (!confirm("Delete this course?")) return;
 
-        fetch(`/api/courses/${id}`, { method: "DELETE" })
-            .then(() => loadCourses());
+        try {
+            await fetch(`/api/courses/${id}`, {
+                method: "DELETE",
+                headers: authHeaders()
+            });
+            loadCourses();
+        } catch (err) {
+            alert("Failed to delete course.");
+        }
     }
 
     function editCourse(id, title, desc, credits, duration) {
@@ -853,56 +837,65 @@
         courseEditModal.style.display = "none";
     }
 
-    function updateCourse() {
-        fetch(`/api/courses/${courseEditId}`, {
-            method: "PUT",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                title: ecTitle.value,
-                description: ecDesc.value,
-                credits: parseInt(ecCredits.value) || 0,
-                duration: parseInt(ecDuration.value) || 0
-            })
-        }).then(() => {
+    async function updateCourse() {
+        try {
+            await fetch(`/api/courses/${courseEditId}`, {
+                method: "PUT",
+                headers: authHeaders(),
+                body: JSON.stringify({
+                    title: ecTitle.value,
+                    description: ecDesc.value,
+                    credits: parseInt(ecCredits.value) || 0,
+                    duration: parseInt(ecDuration.value) || 0
+                })
+            });
+
             closeCourseEdit();
             loadCourses();
-        });
+        } catch (err) {
+            alert("Failed to update course.");
+        }
     }
 
-    function loadEnrolments() {
-        fetch("/api/enrolments")
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("enrolmentCount").innerText = data.length;
+    async function loadEnrolments() {
+        try {
+            const data = await fetchJson("/api/enrolments");
 
-                if (!data.length) {
-                    enrolmentTable.innerHTML = `<tr><td class="empty-state">No enrolments found.</td></tr>`;
-                    return;
-                }
+            document.getElementById("enrolmentCount").innerText = Array.isArray(data) ? data.length : 0;
 
-                enrolmentTable.innerHTML = `
+            if (!Array.isArray(data) || data.length === 0) {
+                enrolmentTable.innerHTML = `<tr><td class="empty-state">No enrolments found.</td></tr>`;
+                return;
+            }
+
+            enrolmentTable.innerHTML = `
+                <tr>
+                    <th>Student Name</th>
+                    <th>Course Title</th>
+                    <th>Enrolled Date</th>
+                    <th>Status</th>
+                </tr>
+            `;
+
+            data.forEach(e => {
+                const date = e.enrolledAt ? new Date(e.enrolledAt).toLocaleDateString("en-GB") : "-";
+                const status = e.status || "ACTIVE";
+
+                enrolmentTable.innerHTML += `
                     <tr>
-                        <th>Student Name</th>
-                        <th>Course Title</th>
-                        <th>Enrolled Date</th>
-                        <th>Status</th>
+                        <td>${safeText(e.studentName)}</td>
+                        <td>${e.course ? safeText(e.course.title) : "Deleted Course"}</td>
+                        <td>${date}</td>
+                        <td><span class="badge ${status}">${status}</span></td>
                     </tr>
                 `;
-
-                data.forEach(e => {
-                    const date = e.enrolledAt ? new Date(e.enrolledAt).toLocaleDateString("en-GB") : "-";
-                    const status = e.status || "ACTIVE";
-
-                    enrolmentTable.innerHTML += `
-                        <tr>
-                            <td>${safeText(e.studentName)}</td>
-                            <td>${e.course ? safeText(e.course.title) : "Deleted Course"}</td>
-                            <td>${date}</td>
-                            <td><span class="badge ${status}">${status}</span></td>
-                        </tr>
-                    `;
-                });
             });
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("enrolmentCount").innerText = 0;
+            enrolmentTable.innerHTML = `<tr><td class="empty-state">Failed to load enrolments.</td></tr>`;
+        }
     }
 
     window.onclick = function(e) {

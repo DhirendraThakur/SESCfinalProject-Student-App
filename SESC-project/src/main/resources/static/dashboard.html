@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --primary: #2563eb;
@@ -23,8 +19,6 @@
             --dark: #0f172a;
             --text: #1f2937;
             --muted: #64748b;
-            --soft: #f8fafc;
-            --white: #ffffff;
             --border: #e2e8f0;
             --shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
         }
@@ -71,16 +65,8 @@
             font-size: 22px;
         }
 
-        .brand h2 {
-            color: var(--dark);
-            font-size: 22px;
-        }
-
-        .brand p {
-            color: var(--muted);
-            font-size: 13px;
-            margin-top: 2px;
-        }
+        .brand h2 { color: var(--dark); font-size: 22px; }
+        .brand p { color: var(--muted); font-size: 13px; margin-top: 2px; }
 
         .nav-right {
             display: flex;
@@ -227,8 +213,6 @@
             border-radius: 24px;
             padding: 24px;
             box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
         }
 
         .stat-icon {
@@ -358,9 +342,7 @@
             font-weight: 700;
         }
 
-        .services {
-            padding: 24px;
-        }
+        .services { padding: 24px; }
 
         .services h3 {
             color: var(--dark);
@@ -404,9 +386,7 @@
             align-items: center;
         }
 
-        .service-card h4 {
-            color: var(--dark);
-        }
+        .service-card h4 { color: var(--dark); }
 
         .service-card p {
             color: var(--muted);
@@ -453,9 +433,7 @@
             margin-bottom: 26px;
         }
 
-        .section-header {
-            margin-bottom: 20px;
-        }
+        .section-header { margin-bottom: 20px; }
 
         .section-header h3 {
             color: var(--dark);
@@ -480,7 +458,6 @@
             border-radius: 22px;
             padding: 20px;
             box-shadow: 0 10px 22px rgba(15,23,42,0.045);
-            transition: 0.25s;
             position: relative;
             overflow: hidden;
         }
@@ -615,47 +592,20 @@
             margin-top: 8px;
         }
 
-        .eligible {
-            color: var(--success);
-        }
-
-        .not-eligible {
-            color: var(--danger);
-        }
+        .eligible { color: var(--success); }
+        .not-eligible { color: var(--danger); }
 
         @media (max-width: 950px) {
-            .hero,
-            .top-grid,
-            .stats {
-                grid-template-columns: 1fr;
-            }
+            .hero, .top-grid, .stats { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 650px) {
-            .navbar {
-                padding: 14px 18px;
-            }
-
-            .brand p,
-            .nav-user {
-                display: none;
-            }
-
-            .page {
-                padding: 18px;
-            }
-
-            .hero {
-                padding: 30px;
-            }
-
-            .hero h1 {
-                font-size: 30px;
-            }
-
-            .profile-body {
-                grid-template-columns: 1fr;
-            }
+            .navbar { padding: 14px 18px; }
+            .brand p, .nav-user { display: none; }
+            .page { padding: 18px; }
+            .hero { padding: 30px; }
+            .hero h1 { font-size: 30px; }
+            .profile-body { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -881,8 +831,40 @@
 <script>
     let user = JSON.parse(localStorage.getItem("user"));
 
-    if (!user) {
+    if (!user || !user.token) {
+        localStorage.clear();
         window.location.href = "login.html";
+    }
+
+    let myEnrolledCourseIds = [];
+
+    function authHeaders() {
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + user.token
+        };
+    }
+
+    async function fetchJson(url, options = {}) {
+        const res = await fetch(url, {
+            ...options,
+            headers: {
+                ...authHeaders(),
+                ...(options.headers || {})
+            }
+        });
+
+        if (res.status === 401 || res.status === 403) {
+            alert("Session expired or access denied. Please login again.");
+            logout();
+            throw new Error("Unauthorized");
+        }
+
+        if (!res.ok) {
+            throw new Error(await res.text());
+        }
+
+        return await res.json();
     }
 
     function safeValue(value, fallback = "Not provided") {
@@ -934,37 +916,52 @@
         modal.style.display = "none";
     }
 
-    function saveUpdate() {
-        const updated = {
-            name: newName.value,
-            email: newEmail.value,
-            phone: newPhone.value,
-            address: newAddress.value
-        };
+    async function saveUpdate() {
+        try {
+            const updated = {
+                name: newName.value,
+                email: newEmail.value,
+                phone: newPhone.value,
+                address: newAddress.value
+            };
 
-        fetch(`/api/students/${user.id}`, {
-            method: "PUT",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(updated)
-        })
-        .then(res => res.json())
-        .then(data => {
-            user = data;
-            localStorage.setItem("user", JSON.stringify(data));
+            const data = await fetchJson(`/api/students/${user.id}`, {
+                method: "PUT",
+                body: JSON.stringify(updated)
+            });
+
+            user = {
+                ...user,
+                ...data,
+                token: user.token
+            };
+
+            localStorage.setItem("user", JSON.stringify(user));
             renderUser();
             closeModal();
             alert("Profile updated successfully!");
-        });
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to update profile.");
+        }
     }
 
-    function deleteUser() {
-        if (confirm("Delete account?")) {
-            fetch(`/api/students/${user.id}`, {
-                method: "DELETE"
-            }).then(() => {
-                localStorage.clear();
-                window.location.href = "register.html";
+    async function deleteUser() {
+        if (!confirm("Delete account?")) return;
+
+        try {
+            await fetch(`/api/students/${user.id}`, {
+                method: "DELETE",
+                headers: authHeaders()
             });
+
+            localStorage.clear();
+            window.location.href = "register.html";
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to delete account.");
         }
     }
 
@@ -986,16 +983,7 @@
         summaryEl.innerText = "Checking";
 
         try {
-            const res = await fetch(`/api/students/${user.id}/graduation`);
-
-            if (!res.ok) {
-                statusEl.innerText = "Could not check graduation eligibility.";
-                statusEl.className = "graduation-status not-eligible";
-                summaryEl.innerText = "Error";
-                return;
-            }
-
-            const data = await res.json();
+            const data = await fetchJson(`/api/students/${user.id}/graduation`);
 
             if (data.eligible) {
                 statusEl.innerText = "Eligible to graduate ✅";
@@ -1015,25 +1003,20 @@
         }
     }
 
-    let myEnrolledCourseIds = [];
-
     async function loadEnrolments() {
+        const grid = document.getElementById("enrolmentsGrid");
+
         try {
-            const res = await fetch(`/api/enrolments/${user.id}`);
-            const grid = document.getElementById("enrolmentsGrid");
+            const enrolments = await fetchJson(`/api/enrolments/${user.id}`);
 
-            if (!res.ok) {
-                grid.innerHTML = `<p class="empty-message">Error loading enrolments.</p>`;
-                return;
-            }
+            document.getElementById("enrolmentCount").innerText =
+                Array.isArray(enrolments) ? enrolments.length : 0;
 
-            const enrolments = await res.json();
+            myEnrolledCourseIds = Array.isArray(enrolments)
+                ? enrolments.map(e => e.course?.id).filter(Boolean)
+                : [];
 
-            document.getElementById("enrolmentCount").innerText = enrolments.length;
-
-            myEnrolledCourseIds = enrolments.map(e => e.course?.id).filter(Boolean);
-
-            if (enrolments.length === 0) {
+            if (!Array.isArray(enrolments) || enrolments.length === 0) {
                 grid.innerHTML = `<p class="empty-message">You are not enrolled in any courses yet.</p>`;
             } else {
                 grid.innerHTML = "";
@@ -1055,27 +1038,26 @@
                     grid.appendChild(card);
                 });
             }
+
         } catch (err) {
-            console.error("Error loading enrolments", err);
+            console.error("Error loading enrolments:", err);
+            document.getElementById("enrolmentCount").innerText = "0";
+            grid.innerHTML = `<p class="empty-message">Error loading enrolments. Please login again or check API permission.</p>`;
         } finally {
             loadCourses();
         }
     }
 
     async function loadCourses() {
+        const grid = document.getElementById("coursesGrid");
+
         try {
-            const res = await fetch(`/api/courses`);
-            const grid = document.getElementById("coursesGrid");
+            const courses = await fetchJson(`/api/courses`);
 
-            if (!res.ok) {
-                grid.innerHTML = `<p class="empty-message">Error loading courses.</p>`;
-                return;
-            }
+            document.getElementById("courseCount").innerText =
+                Array.isArray(courses) ? courses.length : 0;
 
-            const courses = await res.json();
-            document.getElementById("courseCount").innerText = courses.length;
-
-            if (courses.length === 0) {
+            if (!Array.isArray(courses) || courses.length === 0) {
                 grid.innerHTML = `<p class="empty-message">No courses available.</p>`;
             } else {
                 grid.innerHTML = "";
@@ -1106,20 +1088,32 @@
                     grid.appendChild(card);
                 });
             }
+
         } catch (err) {
-            console.error("Error loading courses", err);
+            console.error("Error loading courses:", err);
+            document.getElementById("courseCount").innerText = "0";
+            grid.innerHTML = `<p class="empty-message">Error loading courses. Please login again or check API permission.</p>`;
         }
     }
 
     async function enrol(courseId) {
         try {
-            const payload = { studentId: user.id, courseId: courseId };
+            const payload = {
+                studentId: user.id,
+                courseId: courseId
+            };
 
             const res = await fetch(`/api/enrolments`, {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: authHeaders(),
                 body: JSON.stringify(payload)
             });
+
+            if (res.status === 401 || res.status === 403) {
+                alert("Session expired or access denied. Please login again.");
+                logout();
+                return;
+            }
 
             if (res.ok) {
                 alert("Successfully enrolled!");
@@ -1127,8 +1121,10 @@
             } else {
                 alert("Failed to enrol.");
             }
+
         } catch (err) {
             console.error("Error enrolling", err);
+            alert("Error enrolling course.");
         }
     }
 
@@ -1163,9 +1159,7 @@
         if (e.target === profileModal) closeProfile();
     };
 
-    if (user) {
-        loadEnrolments();
-    }
+    loadEnrolments();
 </script>
 
 </body>
