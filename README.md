@@ -37,44 +37,50 @@ The system consists of three interconnected services and a reference implementat
 
 ---
 
+---
+
+## Running Tests
+
+To run the unit tests for the microservices, navigate to the respective service directory and use Maven:
+
+```bash
+mvn test
+```
+
+### Library Service Unit Tests
+We have implemented 14 unit tests in the `library-service` using **JUnit 5** and **Mockito**, covering:
+*   **Book Management:** CRUD operations and inventory logic.
+*   **Loan Logic:** Borrowing, returning, and automatic late fine calculations.
+*   **Account Management:** Automatic account creation for new students.
+
+---
+
 ## How to Run the System
 
-To run the full system locally, follow these steps in order:
+To run the full system locally, follow these steps:
 
 ### 1. Prerequisites
-Ensure you have **MongoDB** running locally on the default port `27017`.
+Ensure you have **MongoDB** running locally on the default port `27017` and **Java 21** installed.
 
 ### 2. Start the Microservices
-Open three separate terminal windows/tabs and run each service:
+Open separate terminal windows for each service and run:
 
-**Terminal 1: Student Service**
 ```bash
-cd SESC-project
-./mvnw spring-boot:run
-```
+# Student Service (Port 8080)
+cd SESC-project && mvn spring-boot:run
 
-**Terminal 2: Library Service**
-```bash
-cd library-service
-./mvnw spring-boot:run
-```
+# Library Service (Port 8081)
+cd library-service && mvn spring-boot:run
 
-**Terminal 3: Finance Service**
-```bash
-cd finance-service
-./mvnw spring-boot:run
+# Finance Service (Port 8082)
+cd finance-service && mvn spring-boot:run
 ```
 
 ### 3. Accessing the UI Portals
-
-Each service provides a simple frontend for its specific features:
-
-*   **Main Application Portal:** [http://localhost:8080/](http://localhost:8080/)
-    *   Register/Login to manage courses and check graduation eligibility.
+Each service provides a frontend for its specific features:
+*   **Main Portal:** [http://localhost:8080/](http://localhost:8080/)
 *   **Library Portal:** [http://localhost:8081/](http://localhost:8081/)
-    *   Manage books and check library account status.
 *   **Finance Portal:** [http://localhost:8082/](http://localhost:8082/)
-    *   View invoices and pay outstanding balances.
 
 ---
 
@@ -86,13 +92,13 @@ Each service provides a simple frontend for its specific features:
 - `GET /api/students/{id}/graduation`: Check eligibility to graduate.
 
 ### Library Service (8081)
-- `POST /api/library/accounts/register`: create internal library record.
+- `POST /api/library/books`: Add books to the catalog.
 - `GET /api/library/books`: List available catalog.
+- `PUT /api/library/loans/return/{loanId}`: Return book (triggers late fines).
 
 ### Finance Service (8082)
-- `POST /accounts/`: Create finance account.
-- `POST /invoices/`: Issue a new invoice (outstanding by default).
-- `GET /accounts/student/{id}`: Detailed account balance and status check.
+- `POST /invoices/`: Issue a new invoice.
+- `GET /invoices/student/{id}/outstanding`: Check unpaid balances.
 - `PUT /invoices/{id}/pay`: Settle an invoice.
 
 ---
@@ -101,10 +107,10 @@ Each service provides a simple frontend for its specific features:
 
 ```
 SESCfinalProject-Student-App/
-├── SESC-project/             # Student Service (Source on Github)
-├── library-service/          # Library Service (Source on Github)
-└── finance-service/          # Finance Service (Local reference only)
+├── SESC-project/             # Student Service
+├── library-service/          # Library Service
+└── finance-service/          # Finance Service
 ```
 
 > [!NOTE]
-> For this version of the project, the **finance-service** is a local-only reference implementation and is NOT committed to the public repository.
+> All services use Spring Boot 3.x and MongoDB. The system is designed to demonstrate microservice orchestration and inter-service communication.
